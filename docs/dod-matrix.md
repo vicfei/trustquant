@@ -8,10 +8,10 @@
 | `get_calculation_manifest` | —（非数值） | — | — | ✅ replay_unavailable（缺记录） | ✅ skill trace 覆盖 | ✅ 哈希校验后返回 | ✅ | **M0 交付** |
 | `replay_calculation` | —（非数值） | — | — | ✅ replay_unavailable / artifact_unavailable | ✅ skill trace 覆盖 | ✅ 摘要重算 + 差异报告 | ✅ | **M0 交付** |
 | 外部 Python Provider 通道 | —（工程原型） | — | — | ✅ provider_unavailable / resource_limit(超时) / internal_error(崩溃) | — | ✅ 版本上报入 manifest 通道就绪 | ✅ ADR-0002 | **M0 原型** |
-| `load_market_dataset` | ⬜ schema/类型/日期序/重复/缺失/恶意 CSV/资源限制 | — | ⬜ 收益口径字段 | 🟡 规则已冻结（ADR-0005），实现 M1 | ⬜ 注入用例 M1 | ⬜ 数据以内容寻址引用入 bundle | 🟡 ADR-0005 | M1 |
-| `optimize_portfolio` | ⬜ 解析 QP + KKT + 约束满足 + 目标值 | ⬜ 可行性/对偶间隙 | ⬜ weight/position 口径 | ⬜ | ⬜ | ⬜（Python Provider 经边车） | ⬜ | M1 |
-| `analyze_portfolio_risk` | ⬜ 手算小样本 fixtures | ⬜ 年化一致性 | ⬜ simple/log、频率显式 | ⬜ | ⬜ | ⬜ | ⬜ | M1 |
-| `stress_test_portfolio` | ⬜ 可手算持仓冲击 fixtures | ⬜ 情景基准一致 | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | M1 |
+| `load_market_dataset` | ✅ ADR-0005 全规则单测（结构/数据/资源三分类判例） | — | ✅ schema 显式 | ✅ invalid_input/invalid_market_data/resource_limit/artifact_unavailable | ✅ 注入即数据用例 | ✅ 内容寻址数据集入库（dataset_id） | ✅ 本文件 + ADR-0005 | **M1 交付** |
+| `optimize_portfolio` | ✅ 独立纯 Python oracle：解析 min-var（3 资产 + 2 资产内点）与内点切点基准；边界用例仅不变量（诚实标注） | ✅ 和为 1、[0,max_w] 界、求解器容差 | ✅ 权重口径 + mu/cov 估计器显式（compounding=False 钉正） | ✅ provider_unavailable/invalid_input/invalid_market_data | ✅ 多步工作流 + skill trace | ✅ Provider 版本入 manifest；同环境重放 PASS | ✅ provider-status.md | **M1 交付（实验 Provider）** |
+| `analyze_portfolio_risk` | ✅ 手算微样本 + 合成数据全量 oracle | ✅ 年化/复利口径显式 | ✅ simple 收益、252、ddof=1 逐指标 units | ✅ invalid_input/invalid_market_data | ✅ skill trace | ✅ manifest + 重放 | ✅ | **M1 交付** |
+| `stress_test_portfolio` | ✅ 可手算持仓冲击 oracle（3 情景） | ✅ 贡献之和=组合收益（逐情景断言） | ✅ 单位名义基准口径 | ✅ invalid_input（非法冲击） | ✅ skill trace | ✅ manifest + 重放 | ✅ | **M1 交付** |
 
 ## M0 证据索引（对应 ADR-0006 十条门禁）
 
@@ -28,9 +28,11 @@
 | 9 本矩阵 | 本文件 |
 | 10 合成数据 | `data/gen_synthetic_prices.py`（seed 20260101）+ `demo_prices.csv` + SHA256（README 记录） |
 
-## 诚实声明
+## 诚实声明（M1 更新）
 
-- `invalid_market_data` / `no_convergence` 已定义、M0 无触发场景（M1 数据加载启用）；
+- `invalid_market_data` 已由数据加载启用判例；`no_convergence` 仍定义未触发；
+- 有界优化解以不变量验证，不以解析权重冒充（fixtures/provenance 注明）；
+- PyPortfolioOpt 1.6 的 compounding 默认翻转已被显式钉正并有测试守护（docs/provider-status.md）；
 - 重放承诺 = 同版本同环境；跨版本仅解析与差异说明；
 - Python Provider M0 是工程通道原型（echo_add），不含组合优化；
 - WASM 仅为验证通道目标（M0–M2），未接入本仓库 CI（v1 已验证过该模式，M2 差分接入）。

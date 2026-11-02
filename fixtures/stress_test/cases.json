@@ -1,0 +1,163 @@
+{
+ "cases": [
+  {
+   "expected": {
+    "baseline_value": 156.11041666666665,
+    "contributions": {
+     "SYNTH_A": -0.03367781842445919,
+     "SYNTH_B": -0.025073998905689086,
+     "SYNTH_C": -0.07313149122549478
+    },
+    "pnl": -20.58835824999997,
+    "portfolio_return": -0.13188330855564287,
+    "shocked_value": 135.52205841666668
+   },
+   "id": "stress_equity_shock",
+   "input": {
+    "dataset": "demo_prices",
+    "shocks": {
+     "SYNTH_A": -0.2,
+     "SYNTH_B": -0.25,
+     "SYNTH_C": -0.1
+    },
+    "weights": {
+     "SYNTH_A": 0.3333333333333333,
+     "SYNTH_B": 0.3333333333333333,
+     "SYNTH_C": 0.3333333333333333
+    }
+   },
+   "tolerance": {
+    "exact_metrics": [],
+    "float_metrics": {
+     "baseline_value": {
+      "atol": 1e-12,
+      "rtol": 1e-10,
+      "scale_type": "expected_magnitude"
+     },
+     "pnl": {
+      "atol": 1e-12,
+      "rtol": 1e-10,
+      "scale_type": "expected_magnitude"
+     },
+     "portfolio_return": {
+      "atol": 1e-12,
+      "rtol": 1e-10,
+      "scale_type": "expected_magnitude"
+     },
+     "shocked_value": {
+      "atol": 1e-12,
+      "rtol": 1e-10,
+      "scale_type": "expected_magnitude"
+     }
+    },
+    "mode": "mixed"
+   }
+  },
+  {
+   "expected": {
+    "baseline_value": 156.11041666666665,
+    "contributions": {
+     "SYNTH_A": -0.016838909212229594,
+     "SYNTH_B": 0.015044399343413452,
+     "SYNTH_C": 0.0
+    },
+    "pnl": -0.28014168333331213,
+    "portfolio_return": -0.0017945098688160067,
+    "shocked_value": 155.83027498333334
+   },
+   "id": "stress_mixed_shock",
+   "input": {
+    "dataset": "demo_prices",
+    "shocks": {
+     "SYNTH_A": -0.1,
+     "SYNTH_B": 0.15,
+     "SYNTH_C": 0.0
+    },
+    "weights": {
+     "SYNTH_A": 0.3333333333333333,
+     "SYNTH_B": 0.3333333333333333,
+     "SYNTH_C": 0.3333333333333333
+    }
+   },
+   "tolerance": {
+    "exact_metrics": [],
+    "float_metrics": {
+     "baseline_value": {
+      "atol": 1e-12,
+      "rtol": 1e-10,
+      "scale_type": "expected_magnitude"
+     },
+     "pnl": {
+      "atol": 1e-12,
+      "rtol": 1e-10,
+      "scale_type": "expected_magnitude"
+     },
+     "portfolio_return": {
+      "atol": 1e-12,
+      "rtol": 1e-10,
+      "scale_type": "expected_magnitude"
+     },
+     "shocked_value": {
+      "atol": 1e-12,
+      "rtol": 1e-10,
+      "scale_type": "expected_magnitude"
+     }
+    },
+    "mode": "mixed"
+   }
+  },
+  {
+   "expected": {
+    "baseline_value": 156.11041666666665,
+    "contributions": {
+     "SYNTH_A": 0.0,
+     "SYNTH_B": -0.05014799781137817,
+     "SYNTH_C": 0.0
+    },
+    "pnl": -7.828624833333322,
+    "portfolio_return": -0.050147997811378096,
+    "shocked_value": 148.28179183333333
+   },
+   "id": "stress_single_crash",
+   "input": {
+    "dataset": "demo_prices",
+    "shocks": {
+     "SYNTH_B": -0.5
+    },
+    "weights": {
+     "SYNTH_A": 0.3333333333333333,
+     "SYNTH_B": 0.3333333333333333,
+     "SYNTH_C": 0.3333333333333333
+    }
+   },
+   "tolerance": {
+    "exact_metrics": [],
+    "float_metrics": {
+     "baseline_value": {
+      "atol": 1e-12,
+      "rtol": 1e-10,
+      "scale_type": "expected_magnitude"
+     },
+     "pnl": {
+      "atol": 1e-12,
+      "rtol": 1e-10,
+      "scale_type": "expected_magnitude"
+     },
+     "portfolio_return": {
+      "atol": 1e-12,
+      "rtol": 1e-10,
+      "scale_type": "expected_magnitude"
+     },
+     "shocked_value": {
+      "atol": 1e-12,
+      "rtol": 1e-10,
+      "scale_type": "expected_magnitude"
+     }
+    },
+    "mode": "mixed"
+   }
+  }
+ ],
+ "family": "stress_test",
+ "schema": 1
+}

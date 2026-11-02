@@ -1,0 +1,39 @@
+{
+  "id": "portfolio_workflow",
+  "category": "multi_step_workflow",
+  "steps": [
+    {
+      "tool": "load_market_dataset",
+      "note": "load builtin synthetic dataset",
+      "params": { "builtin": "demo_prices" },
+      "expect": { "status": "success", "result_path_eq": "result.dataset_id" }
+    },
+    {
+      "tool": "analyze_portfolio_risk",
+      "note": "equal-weight risk metrics",
+      "params": {
+        "dataset": "$dataset_id",
+        "weights": { "SYNTH_A": 0.34, "SYNTH_B": 0.33, "SYNTH_C": 0.33 }
+      },
+      "expect": { "status": "success", "result_path_eq": "result.units.annualized_volatility" }
+    },
+    {
+      "tool": "optimize_portfolio",
+      "note": "min-variance via external provider",
+      "params": { "dataset": "$dataset_id", "objective": "min_volatility", "max_weight": 0.6 },
+      "expect": { "status": "success", "result_path_eq": "result.diagnostics.solver" }
+    },
+    {
+      "tool": "stress_test_portfolio",
+      "note": "risk-off shock on the optimized weights is out of scope here; equal weights",
+      "params": {
+        "dataset": "$dataset_id",
+        "weights": { "SYNTH_A": 0.34, "SYNTH_B": 0.33, "SYNTH_C": 0.33 },
+        "scenarios": [
+          { "name": "risk_off", "shocks": { "SYNTH_A": -0.2, "SYNTH_B": -0.25, "SYNTH_C": -0.1 } }
+        ]
+      },
+      "expect": { "status": "success", "result_path_eq": "result.scenarios" }
+    }
+  ]
+}

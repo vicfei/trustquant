@@ -8,7 +8,7 @@ on:
 jobs:
   test:
     # ubuntu-24.04 pinned: fixture baseline (apt libquantlib0-dev 1.33-1) is
-    # tied to noble; python3 present for sidecar channel tests.
+    # tied to noble; python3 + pinned venv for the provider channel.
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -16,31 +16,53 @@ jobs:
         with:
           components: clippy, rustfmt
       - uses: Swatinem/rust-cache@v2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
       - name: fmt
         run: cargo fmt --all --check
       - name: clippy
         run: cargo clippy --workspace --all-targets -- -D warnings
-      - name: test (fixtures + invariants + conformance + sidecar + eval)
+      - name: install pinned provider env (explicit, pre-test)
+        run: |
+          python3 -m venv .venv
+          .venv/bin/pip install -r sidecar/requirements.txt
+      - name: test (fixtures + invariants + conformance + sidecar + provider oracles + eval)
         env:
-          TRUSTQUANT_DATA_DIR: /tmp/finstr-ci-data
+          TRUSTQUANT_DATA_DIR: /tmp/tq-ci-data
         run: |
           mkdir -p $TRUSTQUANT_DATA_DIR
           cargo test --workspace
-      - name: demo replay round-trip
+      - name: quickstart (clean env, no credentials)
         env:
-          TRUSTQUANT_DATA_DIR: /tmp/finstr-ci-demo
+          TRUSTQUANT_DATA_DIR: /tmp/tq-ci-quick
         run: |
           mkdir -p $TRUSTQUANT_DATA_DIR
-          cargo build -p trustquant-cli
-          ./target/debug/trustquant run examples/price_call.json > /dev/null
-          CID=$(ls $TRUSTQUANT_DATA_DIR/calculations | head -1 | sed 's/\.json//')
-          ./target/debug/trustquant replay "$CID"
-      - name: provider channel check
-        run: |
-          cargo build -p trustquant-cli
-          ./target/debug/trustquant provider check
+          scripts/quickstart.sh --full
       - name: synthetic data reproducibility
         run: |
           python3 data/gen_synthetic_prices.py
-          sha256sum data/demo_prices.csv
           git diff --exit-code -- data/ || { echo "SYNTHETIC DATA DRIFTED"; exit 1; }
+
+  fixtures-regen:
+    on:
+      workflow_dispatch:
+      schedule:
+        - cron: "0 4 * * 1"
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: install QuantLib baseline + python
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential libquantlib0-dev python3
+      - name: regenerate all committed generated assets
+        run: |
+          make -C fixture-generator regen
+          python3 fixture-generator/portfolio_oracle.py fixtures/
+          python3 data/gen_synthetic_prices.py
+      - name: verify byte-identical
+        run: |
+          git diff --exit-code --stat -- fixtures/ data/ || {
+            git diff -- fixtures/ data/ | head -60
+            echo "FIXTURES OR DATA DRIFTED"
+            exit 1
+          }

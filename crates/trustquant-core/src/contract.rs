@@ -128,6 +128,17 @@ impl ErrorEnvelope {
         }
     }
 
+    pub fn invalid_market_data(message: String) -> Self {
+        ErrorEnvelope {
+            error_type: ErrorType::InvalidMarketData,
+            message,
+            field_path: None,
+            correctable: false,
+            retryable: false,
+            detail: None,
+        }
+    }
+
     pub fn resource_limit(message: String) -> Self {
         ErrorEnvelope {
             error_type: ErrorType::ResourceLimit,

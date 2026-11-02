@@ -75,6 +75,7 @@ pub fn run_case(case: &Value) -> CaseReport {
     let mut steps = Vec::new();
     let mut npv_by_step: Vec<f64> = Vec::new();
     let mut captured_id: Option<String> = None;
+    let mut captured_dataset: Option<String> = None;
     for (i, step) in case["steps"]
         .as_array()
         .map(|a| a.as_slice())
@@ -83,11 +84,16 @@ pub fn run_case(case: &Value) -> CaseReport {
         .enumerate()
     {
         let tool = step["tool"].as_str().unwrap_or_default().to_string();
-        let outcome = run_step(step, &mut npv_by_step, &captured_id);
+        let outcome = run_step(step, &mut npv_by_step, &captured_id, &captured_dataset);
         if let Ok(env) = &outcome
             && let Some(id) = env["calculation_id"].as_str()
         {
             captured_id = Some(id.to_string());
+        }
+        if let Ok(env) = &outcome
+            && let Some(d) = env["result"]["dataset_id"].as_str()
+        {
+            captured_dataset = Some(d.to_string());
         }
         steps.push(StepReport {
             step: i,
@@ -104,9 +110,14 @@ pub fn run_case(case: &Value) -> CaseReport {
     }
 }
 
-fn mcp_call(tool: &str, step: &Value, captured_id: &Option<String>) -> Result<Value, String> {
-    // $calculation_id placeholder binds to the id captured from a previous step.
-    let params = substitute_placeholders(&step["params"], captured_id);
+fn mcp_call(
+    tool: &str,
+    step: &Value,
+    captured_id: &Option<String>,
+    captured_dataset: &Option<String>,
+) -> Result<Value, String> {
+    // $calculation_id / $dataset_id bind to values captured from previous steps.
+    let params = substitute_placeholders(&step["params"], captured_id, captured_dataset);
     let arguments = json!({
         "schema_version": step
             .get("schema_version")
@@ -126,22 +137,33 @@ fn mcp_call(tool: &str, step: &Value, captured_id: &Option<String>) -> Result<Va
     serde_json::from_str(text).map_err(|e| format!("envelope parse: {e}"))
 }
 
-fn substitute_placeholders(v: &Value, captured_id: &Option<String>) -> Value {
+fn substitute_placeholders(
+    v: &Value,
+    captured_id: &Option<String>,
+    captured_dataset: &Option<String>,
+) -> Value {
     match v {
         Value::String(s) if s == "$calculation_id" => match captured_id {
             Some(id) => json!(id),
             None => Value::Null,
         },
+        Value::String(s) if s == "$dataset_id" => match captured_dataset {
+            Some(d) => json!(d),
+            None => Value::Null,
+        },
         Value::Object(o) => {
             let mut out = serde_json::Map::new();
             for (k, val) in o {
-                out.insert(k.clone(), substitute_placeholders(val, captured_id));
+                out.insert(
+                    k.clone(),
+                    substitute_placeholders(val, captured_id, captured_dataset),
+                );
             }
             Value::Object(out)
         }
         Value::Array(a) => Value::Array(
             a.iter()
-                .map(|x| substitute_placeholders(x, captured_id))
+                .map(|x| substitute_placeholders(x, captured_id, captured_dataset))
                 .collect(),
         ),
         other => other.clone(),
@@ -154,9 +176,10 @@ fn run_step(
     step: &Value,
     npv_by_step: &mut Vec<f64>,
     captured_id: &Option<String>,
+    captured_dataset: &Option<String>,
 ) -> Result<Value, String> {
     let tool = step["tool"].as_str().ok_or("step missing tool")?;
-    let envelope = mcp_call(tool, step, captured_id)?;
+    let envelope = mcp_call(tool, step, captured_id, captured_dataset)?;
 
     let expect = &step["expect"];
     let want_status = expect["status"].as_str().unwrap_or("success");
@@ -218,7 +241,7 @@ fn run_step(
         }
     }
     if expect["reproducible_digest"].as_bool() == Some(true) {
-        let again = mcp_call(tool, step, captured_id)?;
+        let again = mcp_call(tool, step, captured_id, captured_dataset)?;
         let d1 =
             trustquant_core::canonical::digest(&envelope["result"]).map_err(|e| e.to_string())?;
         let d2 = trustquant_core::canonical::digest(&again["result"]).map_err(|e| e.to_string())?;

@@ -1,0 +1,1 @@
+        let sum: f64 = t|t| w[t.as_str()].as_f64().unwrap()).sum();

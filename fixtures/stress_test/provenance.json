@@ -1,0 +1,8 @@
+{
+ "adr": "ADR-0003",
+ "family": "stress_test",
+ "generated_by": "portfolio_oracle.py (pure stdlib, independent implementation)",
+ "input": "data/demo_prices.csv (seed 20260101) + embedded hand-check cases",
+ "note": "Direct price shocks on last close, per-unit-notional baseline; contributions sum to portfolio_return.",
+ "schema": 1
+}

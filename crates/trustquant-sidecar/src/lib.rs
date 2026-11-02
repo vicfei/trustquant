@@ -22,9 +22,18 @@ pub fn sidecar_script_path() -> std::path::PathBuf {
         .join("../../sidecar/trustquant_provider.py")
 }
 
-/// Interpreter override for tests and heterogeneous environments.
+/// Interpreter resolution: $TRUSTQUANT_PROVIDER_PYTHON > the repo's
+/// `.venv/bin/python` (created by `trustquant provider install`) > python3.
+/// Pure path preference — no implicit installation, ever.
 pub fn python_command() -> String {
-    std::env::var("TRUSTQUANT_PROVIDER_PYTHON").unwrap_or_else(|_| "python3".to_string())
+    if let Ok(p) = std::env::var("TRUSTQUANT_PROVIDER_PYTHON") {
+        return p;
+    }
+    let venv = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../.venv/bin/python");
+    if venv.exists() {
+        return venv.to_string_lossy().into_owned();
+    }
+    "python3".to_string()
 }
 
 #[derive(Debug)]
@@ -38,8 +47,20 @@ pub struct SidecarHandle {
 #[derive(Debug)]
 pub enum SidecarError {
     ProviderUnavailable(String),
-    Timeout { after_ms: u64 },
-    Crashed { detail: String },
+    Timeout {
+        after_ms: u64,
+    },
+    Crashed {
+        detail: String,
+    },
+    /// The provider answered with a structured refusal (protocol v1 error
+    /// body). Its error_type/field/install_hint must be preserved.
+    ProviderRefused {
+        error_type: String,
+        message: String,
+        field: Option<String>,
+        install_hint: Option<String>,
+    },
 }
 
 impl SidecarError {
@@ -54,6 +75,40 @@ impl SidecarError {
             )),
             SidecarError::Crashed { detail } => {
                 ErrorEnvelope::internal(format!("provider process failed: {detail}"))
+            }
+            SidecarError::ProviderRefused {
+                error_type,
+                message,
+                field,
+                install_hint,
+            } => {
+                use trustquant_core::contract::ErrorType;
+                let et = match error_type.as_str() {
+                    "invalid_input" => ErrorType::InvalidInput,
+                    "unsupported_feature" => ErrorType::UnsupportedFeature,
+                    "invalid_market_data" => ErrorType::InvalidMarketData,
+                    "provider_unavailable" => ErrorType::ProviderUnavailable,
+                    "no_convergence" => ErrorType::NoConvergence,
+                    "resource_limit" => ErrorType::ResourceLimit,
+                    "internal_error" => ErrorType::InternalError,
+                    _ => ErrorType::InternalError,
+                };
+                ErrorEnvelope {
+                    error_type: et,
+                    message,
+                    field_path: field,
+                    correctable: matches!(
+                        et,
+                        ErrorType::InvalidInput | ErrorType::ProviderUnavailable
+                    ),
+                    retryable: matches!(
+                        et,
+                        ErrorType::ProviderUnavailable
+                            | ErrorType::ResourceLimit
+                            | ErrorType::InternalError
+                    ),
+                    detail: install_hint.map(serde_json::Value::String),
+                }
             }
         }
     }
@@ -176,8 +231,18 @@ impl SidecarHandle {
             });
         }
         if resp["status"].as_str() != Some("ok") {
-            return Err(SidecarError::Crashed {
-                detail: format!("provider returned error: {resp}"),
+            let e = &resp["error"];
+            return Err(SidecarError::ProviderRefused {
+                error_type: e["error_type"]
+                    .as_str()
+                    .unwrap_or("internal_error")
+                    .to_string(),
+                message: e["message"]
+                    .as_str()
+                    .unwrap_or("provider refused without a message")
+                    .to_string(),
+                field: e["field"].as_str().map(str::to_string),
+                install_hint: e["install_hint"].as_str().map(str::to_string),
             });
         }
         Ok(resp["result"].clone())
@@ -275,11 +340,17 @@ mod tests {
 
     #[test]
     fn crash_maps_to_internal_error() {
+        // Deterministic crash injection: kill the child after handshake, then
+        // call -> broken pipe -> Crashed -> internal_error. (The python-side
+        // "die" behavior is additionally covered by manual verification; the
+        // old die-based test was flaky on this loaded 2-core box.)
         let _g = guard();
         let mut sc =
-            SidecarHandle::start(&script(), Duration::from_secs(15)).expect("sidecar starts");
+            SidecarHandle::start(&script(), Duration::from_secs(20)).expect("sidecar starts");
+        sc.child.kill().expect("kill child");
+        let _ = sc.child.wait();
         let err = sc
-            .call("die", &json!({}), Duration::from_secs(5))
+            .call("echo_add", &json!({"a": 1, "b": 2}), Duration::from_secs(5))
             .unwrap_err();
         match &err {
             SidecarError::Crashed { .. } => {}

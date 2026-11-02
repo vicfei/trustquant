@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TrustQuant — agent-facing financial tool layer</title>
+<style>
+  :root { --bg:#0f1115; --panel:#171a21; --line:#262b36; --fg:#e8eaf0; --dim:#9aa3b2; --acc:#4f8cff; --ok:#3ecf8e; --bad:#ff6b6b; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:14px/1.5 ui-sans-serif,system-ui,"Segoe UI",Roboto,sans-serif; }
+  header { padding:18px 28px; border-bottom:1px solid var(--line); display:flex; align-items:baseline; gap:14px; }
+  header h1 { font-size:18px; margin:0; } header span { color:var(--dim); font-size:12px; }
+  main { max-width:1080px; margin:0 auto; padding:24px 28px 80px; display:grid; gap:22px; }
+  section { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:18px 20px; }
+  section h2 { margin:0 0 4px; font-size:15px; } section p.desc { margin:0 0 12px; color:var(--dim); font-size:12.5px; }
+  label { display:inline-block; margin:6px 10px 6px 0; color:var(--dim); font-size:12px; }
+  input { background:#0d0f13; color:var(--fg); border:1px solid var(--line); border-radius:6px; padding:5px 8px; width:110px; font-size:13px; }
+  button { background:var(--acc); border:0; color:#fff; border-radius:6px; padding:7px 16px; font-size:13px; cursor:pointer; margin-top:6px; }
+  button:disabled { opacity:.5; cursor:wait; }
+  pre { background:#0d0f13; border:1px solid var(--line); border-radius:8px; padding:12px; overflow:auto; font-size:12px; max-height:340px; margin:10px 0 0; }
+  .bar-row { display:flex; align-items:center; gap:10px; margin:4px 0; font-size:12.5px; }
+  .bar-track { flex:1; height:14px; background:#0d0f13; border-radius:4px; overflow:hidden; border:1px solid var(--line); }
+  .bar-fill { height:100%; background:linear-gradient(90deg,#4f8cff,#3ecf8e); }
+  .kv { color:var(--dim); font-size:12px; margin-top:8px; }
+  .status-ok { color:var(--ok); } .status-err { color:var(--bad); }
+</style>
+</head>
+<body>
+<header>
+  <h1>TrustQuant</h1>
+  <span>local-first financial tool layer · same semantics as CLI &amp; MCP · every call recorded &amp; replayable</span>
+</header>
+<main>
+
+<section id="demo1">
+  <h2>Demo 1 · European option pricing &amp; Greeks</h2>
+  <p class="desc">Black-Scholes-Merton analytic engine, pinned by QuantLib fixtures. Vega is per 1.00 volatility; Theta is per year.</p>
+  <div>
+    <label>type <select id="o-type"><option>call</option><option>put</option></select></label>
+    <label>spot <input id="o-spot" value="100"></label>
+    <label>strike <input id="o-strike" value="105"></label>
+    <label>rate <input id="o-rate" value="0.05"></label>
+    <label>dividend <input id="o-div" value="0.02"></label>
+    <label>vol <input id="o-vol" value="0.2"></label>
+    <label>val date <input id="o-val" value="2023-06-21" size="10"></label>
+    <label>maturity <input id="o-mat" value="2024-06-20" size="10"></label>
+    <button onclick="runOption()">Price it</button>
+  </div>
+  <div id="opt-out"></div>
+</section>
+
+<section id="demo2">
+  <h2>Demo 2 · Portfolio optimization (external Python provider)</h2>
+  <p class="desc">Loads the shipped synthetic dataset, then long-only min-variance optimization via PyPortfolioOpt in a pinned sidecar environment. If the provider is not installed the call fails explicitly — never silently.</p>
+  <div>
+    <label>objective <select id="p-obj"><option>min_volatility</option><option>max_sharpe</option></select></label>
+    <label>risk-free <input id="p-rf" value="0.02"></label>
+    <label>max weight <input id="p-maxw" value="0.6"></label>
+    <button onclick="runOptimize()">Optimize</button>
+  </div>
+  <div id="opt2-out"></div>
+</section>
+
+<section id="demo3">
+  <h2>Demo 3 · Risk, stress test &amp; replay</h2>
+  <p class="desc">Risk metrics (Rust built-in, oracle-pinned) with equal weights, a shock scenario on the last close, then a replay verification of the recorded calculation.</p>
+  <div>
+    <button onclick="runRisk()">Risk &amp; stress</button>
+    <button onclick="runReplay()">Replay last calculation</button>
+  </div>
+  <div id="opt3-out"></div>
+</section>
+
+</main>
+<script>
+let lastCalculationId = null;
+async function call(tool, params) {
+  const res = await fetch('/api/tools/call', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({schema_version: '0.1', request_id: 'web-' + tool, tool, params})
+  });
+  const env = await res.json();
+  if (env.calculation_id) lastCalculationId = env.calculation_id;
+  return env;
+}
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function envelopeBlock(env) {
+  const cls = env.status === 'success' ? 'status-ok' : 'status-err';
+  return `<div class="kv">${cls === 'status-ok' ? '✓' : '✗'} <span class="${cls}">${env.status}</span>`
+    + ` · engine ${esc(env.engine_id || '-')} · provider ${esc(env.provider_id || '-')}`
+    + (env.calculation_id ? ` · <a href="#" onclick="return false" style="color:var(--acc)">${esc(env.calculation_id.slice(0,8))}…</a>` : '')
+    + `</div>`;
+}
+async function runOption() {
+  const out = document.getElementById('opt-out');
+  out.innerHTML = 'pricing…';
+  const env = await call('price_european_option', {
+    option_type: document.getElementById('o-type').value,
+    spot: +document.getElementById('o-spot').value,
+    strike: +document.getElementById('o-strike').value,
+    risk_free_rate: +document.getElementById('o-rate').value,
+    dividend_yield: +document.getElementById('o-div').value,
+    volatility: +document.getElementById('o-vol').value,
+    valuation_date: document.getElementById('o-val').value,
+    maturity_date: document.getElementById('o-mat').value
+  });
+  out.innerHTML = envelopeBlock(env) + (env.status === 'success'
+    ? `<div class="kv">NPV <b>${env.result.npv.toFixed(4)}</b> per unit spot · Δ ${env.result.greeks.delta.toFixed(4)} · Γ ${env.result.greeks.gamma.toFixed(6)} · Vega ${env.result.greeks.vega.toFixed(3)} /1.00 vol · Θ ${env.result.greeks.theta.toFixed(3)} /yr</div><pre>${esc(JSON.stringify(env, null, 1))}</pre>`
+    : `<pre>${esc(JSON.stringify(env.error, null, 1))}</pre>`);
+}
+async function runOptimize() {
+  const out = document.getElementById('opt2-out');
+  out.innerHTML = 'loading dataset…';
+  const loaded = await call('load_market_dataset', {builtin: 'demo_prices'});
+  if (loaded.status !== 'success') { out.innerHTML = envelopeBlock(loaded) + `<pre>${esc(JSON.stringify(loaded.error, null, 1))}</pre>`; return; }
+  const env = await call('optimize_portfolio', {
+    dataset: loaded.result.dataset_id,
+    objective: document.getElementById('p-obj').value,
+    risk_free_rate: +document.getElementById('p-rf').value,
+    max_weight: +document.getElementById('p-maxw').value
+  });
+  if (env.status !== 'success') { out.innerHTML = envelopeBlock(env) + `<pre>${esc(JSON.stringify(env.error, null, 1))}</pre>`; return; }
+  const rows = Object.entries(env.result.weights).map(([t, w]) =>
+    `<div class="bar-row"><span style="width:70px">${esc(t)}</span><div class="bar-track"><div class="bar-fill" style="width:${(w*100).toFixed(1)}%"></div></div><span>${(w*100).toFixed(2)}%</span></div>`).join('');
+  out.innerHTML = envelopeBlock(env)
+    + rows
+    + `<div class="kv">expected return ${(env.result.expected_return*100).toFixed(2)}% · vol ${(env.result.volatility*100).toFixed(2)}% · ${esc(env.result.diagnostics.solver)}</div>`;
+}
+async function runRisk() {
+  const out = document.getElementById('opt3-out');
+  out.innerHTML = 'computing…';
+  const loaded = await call('load_market_dataset', {builtin: 'demo_prices'});
+  const ds = loaded.result.dataset_id;
+  const weights = Object.fromEntries(loaded.result.tickers.map(t => [t, 1 / loaded.result.tickers.length]));
+  const shocks = {}; loaded.result.tickers.forEach((t, i) => shocks[t] = [-0.20, -0.25, -0.10][i % 3]);
+  const risk = await call('analyze_portfolio_risk', {dataset: ds, weights});
+  const stress = await call('stress_test_portfolio', {dataset: ds, weights, scenarios: [{name: 'risk_off', shocks}]});
+  if (risk.status !== 'success') { out.innerHTML = envelopeBlock(risk) + `<pre>${esc(JSON.stringify(risk.error, null, 1))}</pre>`; return; }
+  const r = risk.result, s = stress.result.scenarios[0];
+  out.innerHTML = envelopeBlock(risk) + envelopeBlock(stress)
+    + `<div class="kv">total return ${(r.total_return*100).toFixed(2)}% · ann. return ${(r.annualized_return*100).toFixed(2)}% · ann. vol ${(r.annualized_volatility*100).toFixed(2)}% · max DD ${(r.max_drawdown*100).toFixed(2)}% · Sharpe ${r.sharpe_ratio.toFixed(3)}</div>`
+    + `<div class="kv">stress 'risk_off': portfolio return ${(s.portfolio_return*100).toFixed(2)}% (direct price shock on last close)</div>`;
+}
+async function runReplay() {
+  const out = document.getElementById('opt3-out');
+  if (!lastCalculationId) { out.innerHTML = '<div class="kv">run a calculation first</div>'; return; }
+  out.innerHTML = 'replaying…';
+  const env = await call('replay_calculation', {calculation_id: lastCalculationId});
+  const cls = env.status === 'success' && env.result.result_digest_match ? 'status-ok' : 'status-err';
+  out.innerHTML = envelopeBlock(env) + `<div class="kv">replay <span class="${cls}">${env.result.result_digest_match ? 'REPRODUCED ✓' : 'DIFFERS ✗'}</span> · manifest hash ${env.result.manifest_hash_valid ? 'valid' : 'invalid'}</div><pre>${esc(JSON.stringify(env, null, 1)).slice(0, 1200)}…</pre>`;
+}
+</script>
+</body>
+</html>

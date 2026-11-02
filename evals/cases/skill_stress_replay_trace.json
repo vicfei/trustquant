@@ -1,0 +1,35 @@
+{
+  "id": "skill_stress_replay_trace",
+  "category": "skill_trace",
+  "skill": "portfolio-stress-replay",
+  "steps": [
+    {
+      "tool": "load_market_dataset",
+      "note": "skill step 1: baseline data",
+      "params": { "builtin": "demo_prices" },
+      "expect": { "status": "success", "result_path_eq": "result.dataset_id" }
+    },
+    {
+      "tool": "stress_test_portfolio",
+      "note": "skill step 2: scenario execution",
+      "params": {
+        "dataset": "$dataset_id",
+        "weights": { "SYNTH_A": 0.34, "SYNTH_B": 0.33, "SYNTH_C": 0.33 },
+        "scenarios": [
+          { "name": "equity_shock", "shocks": { "SYNTH_A": -0.2, "SYNTH_B": -0.25, "SYNTH_C": -0.1 } },
+          { "name": "flight_to_quality", "shocks": { "SYNTH_A": -0.1, "SYNTH_B": -0.1, "SYNTH_C": 0.05 } }
+        ]
+      },
+      "expect": { "status": "success", "result_path_eq": "result.units.portfolio_return" }
+    },
+    {
+      "tool": "replay_calculation",
+      "note": "skill step 3: verify reproducibility of the stress run",
+      "params": { "calculation_id": "$calculation_id" },
+      "expect": {
+        "status": "success",
+        "result_fields": { "manifest_hash_valid": true, "result_digest_match": true }
+      }
+    }
+  ]
+}

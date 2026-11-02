@@ -1,0 +1,8 @@
+{
+ "adr": "ADR-0003",
+ "family": "optimize",
+ "generated_by": "portfolio_oracle.py (pure stdlib, independent implementation)",
+ "input": "data/demo_prices.csv (seed 20260101) + embedded hand-check cases",
+ "note": "Analytic references: global min-variance w = S^-1 1 / (1' S^-1 1); tangency w ~ S^-1 (mu - rf); mu = mean daily simple returns x 252, S = sample cov (ddof=1) x 252 \u2014 matching the provider's documented estimators. Bounded/non-interior cases use invariant-only references (ADR-0003 honesty rule).",
+ "schema": 1
+}

@@ -24,6 +24,7 @@ provider:
 
 regen:
 	$(MAKE) -C fixture-generator regen
+	python3 fixture-generator/portfolio_oracle.py fixtures/
 	python3 data/gen_synthetic_prices.py
 
 clean:

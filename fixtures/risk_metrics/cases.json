@@ -1,0 +1,157 @@
+{
+ "cases": [
+  {
+   "expected": {
+    "annualized_return": -0.031011214487775884,
+    "annualized_volatility": 0.10329211420109284,
+    "max_drawdown": 0.18180308698096548,
+    "observations": 499,
+    "sharpe_ratio": -0.3002282868119257,
+    "total_return": -0.060473671320726896
+   },
+   "id": "risk_equal_weight",
+   "input": {
+    "dataset": "demo_prices",
+    "weights": {
+     "SYNTH_A": 0.333333,
+     "SYNTH_B": 0.333333,
+     "SYNTH_C": 0.333333
+    }
+   },
+   "tolerance": {
+    "exact_metrics": [
+     "observations"
+    ],
+    "float_metrics": {
+     "annualized_return": {
+      "atol": 1e-12,
+      "rtol": 1e-10,
+      "scale_type": "expected_magnitude"
+     },
+     "annualized_volatility": {
+      "atol": 1e-12,
+      "rtol": 1e-10,
+      "scale_type": "expected_magnitude"
+     },
+     "max_drawdown": {
+      "atol": 1e-12,
+      "rtol": 1e-10,
+      "scale_type": "expected_magnitude"
+     },
+     "sharpe_ratio": {
+      "atol": 1e-12,
+      "rtol": 1e-10,
+      "scale_type": "expected_magnitude"
+     },
+     "total_return": {
+      "atol": 1e-12,
+      "rtol": 1e-10,
+      "scale_type": "expected_magnitude"
+     }
+    },
+    "mode": "mixed"
+   }
+  },
+  {
+   "expected": {
+    "annualized_return": 0.044535170989636885,
+    "annualized_volatility": 0.0871131524445224,
+    "max_drawdown": 0.13790750452270273,
+    "observations": 499,
+    "sharpe_ratio": 0.5112336052583896,
+    "total_return": 0.09011088968522962
+   },
+   "id": "risk_tilt_c",
+   "input": {
+    "dataset": "demo_prices",
+    "weights": {
+     "SYNTH_A": 0.2,
+     "SYNTH_B": 0.2,
+     "SYNTH_C": 0.6
+    }
+   },
+   "tolerance": {
+    "exact_metrics": [
+     "observations"
+    ],
+    "float_metrics": {
+     "annualized_return": {
+      "atol": 1e-12,
+      "rtol": 1e-10,
+      "scale_type": "expected_magnitude"
+     },
+     "annualized_volatility": {
+      "atol": 1e-12,
+      "rtol": 1e-10,
+      "scale_type": "expected_magnitude"
+     },
+     "max_drawdown": {
+      "atol": 1e-12,
+      "rtol": 1e-10,
+      "scale_type": "expected_magnitude"
+     },
+     "sharpe_ratio": {
+      "atol": 1e-12,
+      "rtol": 1e-10,
+      "scale_type": "expected_magnitude"
+     },
+     "total_return": {
+      "atol": 1e-12,
+      "rtol": 1e-10,
+      "scale_type": "expected_magnitude"
+     }
+    },
+    "mode": "mixed"
+   }
+  },
+  {
+   "expected": {
+    "annualized_return": 218625.78363222125,
+    "annualized_volatility": 6.231111271582838e-16,
+    "max_drawdown": 0.0,
+    "observations": 2,
+    "sharpe_ratio": 3.50861626607874e+20,
+    "total_return": 0.10250000000000004
+   },
+   "id": "risk_tiny_handcheck",
+   "input": {
+    "prices_inline": {
+     "A": [
+      100.0,
+      110.0,
+      99.0
+     ],
+     "B": [
+      50.0,
+      50.0,
+      60.0
+     ]
+    },
+    "weights": {
+     "A": 0.5,
+     "B": 0.5
+    }
+   },
+   "tolerance": {
+    "exact_metrics": [
+     "observations"
+    ],
+    "float_metrics": {
+     "annualized_volatility": {
+      "atol": 1e-13,
+      "rtol": 1e-12,
+      "scale_type": "expected_magnitude"
+     },
+     "total_return": {
+      "atol": 1e-15,
+      "rtol": 1e-12,
+      "scale_type": "expected_magnitude"
+     }
+    },
+    "mode": "mixed"
+   }
+  }
+ ],
+ "family": "risk_metrics",
+ "schema": 1
+}

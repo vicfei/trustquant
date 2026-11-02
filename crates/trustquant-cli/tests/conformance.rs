@@ -52,8 +52,21 @@ fn bad_request_json() -> Value {
     })
 }
 
+/// serde_json's text parser can shift certain 17-digit decimals by one ulp
+/// (deterministically; see ADR-0001 known limitations). Cross-entry equality
+/// therefore compares NORMALIZED TEXT: every side is round-tripped through
+/// the same serialize/parse pipeline so any drift is applied identically.
+fn normalized_text(env: &Value) -> String {
+    let once = serde_json::to_string(&env["result"]).unwrap();
+    let parsed: Value = serde_json::from_str(&once).unwrap();
+    serde_json::to_string(&parsed).unwrap()
+}
+
 fn digest_of(env: &Value) -> String {
-    trustquant_core::canonical::digest(&env["result"]).unwrap()
+    trustquant_core::canonical::digest(
+        &serde_json::from_str::<Value>(&normalized_text(env)).unwrap(),
+    )
+    .unwrap()
 }
 
 fn error_of(env: &Value) -> String {
@@ -179,6 +192,93 @@ fn replay_of_unknown_id_is_replay_unavailable() {
     assert_eq!(env["status"], "error");
     assert_eq!(env["error"]["error_type"], "replay_unavailable");
     assert_eq!(env["error"]["correctable"], false);
+    std::fs::remove_dir_all(&data_dir).ok();
+}
+
+#[test]
+fn portfolio_tools_equivalent_across_entries() {
+    let data_dir = isolated_data_dir("port");
+    // 1) load via CLI (also persists the dataset into the isolated store)
+    let load_req = json!({
+        "schema_version": "0.1",
+        "tool": "load_market_dataset",
+        "params": {"builtin": "demo_prices"}
+    });
+    let cli_load = run_cli(&data_dir, &load_req);
+    assert_eq!(cli_load["status"], "success", "cli load: {cli_load}");
+    let dataset_id = cli_load["result"]["dataset_id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+
+    // 2b) also load in-process (lib/mcp read the test-process store; the
+    // content-addressed id is identical)
+    let lib_load = run_lib(&load_req);
+    assert_eq!(lib_load["status"], "success", "lib load: {lib_load}");
+    assert_eq!(
+        lib_load["result"]["dataset_id"].as_str().unwrap(),
+        dataset_id
+    );
+
+    // 2) risk + stress with the same dataset through all three entries
+    for tool in ["analyze_portfolio_risk", "stress_test_portfolio"] {
+        let params = if tool == "analyze_portfolio_risk" {
+            json!({"dataset": dataset_id, "weights": {"SYNTH_A": 0.34, "SYNTH_B": 0.33, "SYNTH_C": 0.33}})
+        } else {
+            json!({"dataset": dataset_id, "weights": {"SYNTH_A": 0.34, "SYNTH_B": 0.33, "SYNTH_C": 0.33},
+                   "scenarios": [{"name": "s", "shocks": {"SYNTH_A": -0.2}}]})
+        };
+        let req = json!({"schema_version": "0.1", "request_id": "conf-port", "tool": tool, "params": params});
+        let lib = run_lib(&req);
+        let mcp = run_mcp(&req);
+        // CLI subprocess needs the isolated data dir to see the dataset
+        let cli = run_cli(&data_dir, &req);
+        assert_eq!(lib["status"], "success", "{tool}: {lib}");
+        let d_lib = digest_of(&lib);
+        assert_eq!(d_lib, digest_of(&mcp), "{tool}: lib vs mcp");
+        assert_eq!(d_lib, digest_of(&cli), "{tool}: lib vs cli");
+    }
+    std::fs::remove_dir_all(&data_dir).ok();
+}
+
+#[test]
+fn optimize_equivalent_across_entries_and_recorded_by_provider() {
+    let data_dir = isolated_data_dir("opt");
+    let load_req = json!({"schema_version": "0.1", "tool": "load_market_dataset", "params": {"builtin": "demo_prices"}});
+    let cli_load = run_cli(&data_dir, &load_req);
+    assert_eq!(cli_load["status"], "success");
+    let dataset_id = cli_load["result"]["dataset_id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    let lib_load = run_lib(&load_req);
+    assert_eq!(lib_load["status"], "success", "lib load: {lib_load}");
+    let req = json!({
+        "schema_version": "0.1", "request_id": "conf-opt", "tool": "optimize_portfolio",
+        "params": {"dataset": dataset_id, "objective": "min_volatility", "max_weight": 0.6}
+    });
+    let lib = run_lib(&req);
+    let mcp = run_mcp(&req);
+    let cli = run_cli(&data_dir, &req);
+    assert_eq!(lib["status"], "success", "optimize via lib: {lib}");
+    let d_lib = digest_of(&lib);
+    assert_eq!(d_lib, digest_of(&mcp), "optimize: lib vs mcp");
+    assert_eq!(d_lib, digest_of(&cli), "optimize: lib vs cli");
+    // provider identity is recorded, not silently substituted
+    assert_eq!(mcp["provider_id"], "python-sidecar");
+    assert_eq!(mcp["engine_id"], "portfolio_optimize.v1");
+    // same inputs -> deterministic result on the same environment (replay)
+    let cid = cli["calculation_id"].as_str().unwrap();
+    let replay = Command::new(env!("CARGO_BIN_EXE_trustquant"))
+        .args(["replay", cid, "--json"])
+        .env("TRUSTQUANT_DATA_DIR", &data_dir)
+        .output()
+        .expect("spawn replay");
+    let report: Value = serde_json::from_slice(&replay.stdout).unwrap();
+    assert_eq!(
+        report["result_digest_match"], true,
+        "optimize replay: {report}"
+    );
     std::fs::remove_dir_all(&data_dir).ok();
 }
 

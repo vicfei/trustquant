@@ -162,7 +162,7 @@ dependencies = [
 
 [[package]]
 name = "trustquant-cli"
-version = "0.0.1"
+version = "0.1.0"
 dependencies = [
  "serde_json",
  "trustquant-core",
@@ -172,7 +172,7 @@ dependencies = [
 
 [[package]]
 name = "trustquant-core"
-version = "0.0.1"
+version = "0.1.0"
 dependencies = [
  "blake3",
  "libm",
@@ -183,7 +183,7 @@ dependencies = [
 
 [[package]]
 name = "trustquant-eval"
-version = "0.0.1"
+version = "0.1.0"
 dependencies = [
  "serde",
  "serde_json",
@@ -193,7 +193,7 @@ dependencies = [
 
 [[package]]
 name = "trustquant-fixtures"
-version = "0.0.1"
+version = "0.1.0"
 dependencies = [
  "serde_json",
  "trustquant-core",
@@ -201,16 +201,18 @@ dependencies = [
 
 [[package]]
 name = "trustquant-runtime"
-version = "0.0.1"
+version = "0.1.0"
 dependencies = [
  "serde",
  "serde_json",
  "trustquant-core",
+ "trustquant-fixtures",
+ "trustquant-sidecar",
 ]
 
 [[package]]
 name = "trustquant-sidecar"
-version = "0.0.1"
+version = "0.1.0"
 dependencies = [
  "serde_json",
  "trustquant-core",

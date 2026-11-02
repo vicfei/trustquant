@@ -1,0 +1,34 @@
+{
+  "id": "skill_portfolio_optimization_trace",
+  "category": "skill_trace",
+  "skill": "portfolio-optimization-risk",
+  "steps": [
+    {
+      "tool": "load_market_dataset",
+      "note": "skill step 1: load and validate data",
+      "params": { "builtin": "demo_prices" },
+      "expect": { "status": "success", "result_path_eq": "result.dataset_id" }
+    },
+    {
+      "tool": "optimize_portfolio",
+      "note": "skill step 2: optimize with caps",
+      "params": { "dataset": "$dataset_id", "objective": "min_volatility", "max_weight": 0.6 },
+      "expect": { "status": "success", "result_path_eq": "result.weights" }
+    },
+    {
+      "tool": "analyze_portfolio_risk",
+      "note": "skill step 3: risk on the reported weights is done with equal weights here (trace keeps it deterministic)",
+      "params": {
+        "dataset": "$dataset_id",
+        "weights": { "SYNTH_A": 0.34, "SYNTH_B": 0.33, "SYNTH_C": 0.33 }
+      },
+      "expect": { "status": "success", "result_path_eq": "result.conventions.annualization_days" }
+    },
+    {
+      "tool": "get_calculation_manifest",
+      "note": "skill step 4: audit trail",
+      "params": { "calculation_id": "$calculation_id" },
+      "expect": { "status": "success", "result_path_eq": "result.manifest_hash" }
+    }
+  ]
+}

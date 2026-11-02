@@ -1,3 +1,5 @@
 /target
 /fixture-generator/fixgen
 *.swp
+/.venv
+/.wheels

@@ -1,58 +1,70 @@
 # TrustQuant
 
-> 开放、本地优先、面向 Agent 的金融工具层：**可信数值内核 → 统一工具契约 → Provider 路由 → 计算清单与重放**。
-> 当前状态：**M0 Walking Skeleton**（库 + Runtime + CLI + MCP + Skill + 清单 + Eval 闭环）。
-> 定名 **TrustQuant**（可信量化：数值证据、可审计、可重放）；许可证 **Apache-2.0**。
+> Open, local-first, agent-facing financial tool layer: **trusted numerical core → one tool contract → provider routing → calculation manifests and replay**.
+> Status: **M1 public preview candidate** — three end-to-end demos, every tool oracle-pinned, every calculation recorded and replayable. License: **Apache-2.0**. (中文说明：README.zh-CN.md)
 
-## 一分钟验证闭环
+## Why
+
+A general agent shouldn't need to know QuantLib, PyPortfolioOpt or day-count conventions to price an option, optimize a portfolio or run a stress test — but it MUST get unit-correct, verifiable, replayable answers, and honest refusals when something is out of scope. TrustQuant is that layer:
+
+- **Oracle-pinned numerics**: 18 QuantLib 1.33 golden fixtures + a 90-point put-call-parity grid pin the option engine; a pure-Python independent oracle pins risk/stress metrics and analytic optimization references (global min-variance and interior tangency solutions).
+- **Honest states, never silent fallbacks**: american options → `unsupported_feature` with no fabricated number; missing provider → `provider_unavailable` with an install hint; missing dataset/manifest → `artifact_unavailable` / `replay_unavailable`.
+- **Everything is recorded**: every call gets a `calculation_id`; datasets are content-addressed; manifests record who computed, with which versions, on which inputs; replay (same version, same environment) verifies digests and reports diffs.
+- **Units are machine-readable**: per-metric unit semantics (Vega per 1.00 vol, Theta per year, daily simple returns, 252-day year) travel with every result.
+
+## Quickstart (no credentials, no cloud)
 
 ```bash
-make test                                   # fixtures + 不变量 + 三入口一致性 + 边车 + Eval
-TRUSTQUANT_DATA_DIR=/tmp/fin make demo     # 定价 → 计算清单 → 重放 (REPLAY: PASS)
-make provider                               # Python 边车通道（冷启动/版本/往返）
+make test                 # fixtures + invariants + 3-entry conformance + sidecar + evals
+make demo                 # Demo 1: option pricing -> manifest -> replay (REPLAY: PASS)
+make provider             # external Python provider channel check
+trustquant serve          # http://127.0.0.1:7860 - all three demos in one page
+
+# Full profile (portfolio optimization demo):
+trustquant provider install   # explicit, pinned venv (sidecar/requirements.txt) - the ONLY network step
 ```
 
-一次真实调用的样子（三个入口同一实现、同一结果）：
+Lightweight profile = the Rust binary alone (option pricing, risk, stress, manifests, replay, Web/MCP). One-stop profile adds the pinned Python provider (PyPortfolioOpt) for `optimize_portfolio`. The provider is **never** auto-installed and never silently substituted.
 
-```bash
-trustquant run examples/price_call.json    # 库/CLI/MCP 三入口一致性有契约测试
-trustquant replay <calculation_id>         # 同版本同环境重放 + 摘要核对
-trustquant mcp                             # stdio MCP 服务器（协议转换，无计算逻辑）
-trustquant-eval run                        # 7 条确定性 Agent Eval（含 Skill trace）
-```
+## The three demos
 
-结果信封携带：数值 + 逐指标单位语义（Vega=每 1.00 波动率、Theta=每年）、模型与口径（BSM、Act/365F、连续复利）、引擎/Provider/版本、`calculation_id` 与 `manifest_hash`。
+| Demo | Tools | Numerical evidence |
+|---|---|---|
+| Option pricing & Greeks | `price_european_option` | 18 QuantLib fixtures (1d-10y, vol 1e-6-0.9, zero/negative rates) + parity grid + zero-vol limit |
+| Portfolio optimization | `load_market_dataset` -> `optimize_portfolio` | Analytic min-variance/tangency references from an independent pure-Python oracle + constraint invariants |
+| Risk, stress & replay | `analyze_portfolio_risk`, `stress_test_portfolio`, `replay_calculation` | Oracle fixtures incl. hand-computed cases; contribution-sum invariant; replay digest checks |
 
-## 为什么可信
+MCP config sample: [examples/mcp-config.json](examples/mcp-config.json). Verification matrix: [docs/dod-matrix.md](docs/dod-matrix.md). Provider status: [docs/provider-status.md](docs/provider-status.md).
 
-- **Oracle**：18 组 QuantLib 1.33 golden fixtures（call/put × 价内外平价、1 天～10 年、波动率 1e-6～0.9、零利率、负利率）+ put-call parity 网格（90 点）+ 边界与零波动率极限测试；
-- **分层信任**：核心类型与数值验证（fixtures/不变量）＋ Provider 协议（显式路由、无静默回退）＋ 运行时证据（manifest：谁算的、什么版本、什么输入）＋ 审计重放（digest 核对 + 差异报告）；
-- **诚实状态**：美式期权 → `unsupported_feature`，不编造数值；Provider 缺失 → `provider_unavailable`，不静默回退；清单缺失 → `replay_unavailable`，不把"找到记录"说成"可以重放"。
+## Entries — one implementation
 
-公开验证矩阵见 [docs/dod-matrix.md](docs/dod-matrix.md)。
+Library (`trustquant-runtime`), CLI (`trustquant`), MCP (`trustquant mcp`) and Web (`trustquant serve`, localhost-only) all route through the same Runtime; a conformance suite asserts identical results and identical error envelopes (normalized-text comparison; ADR-0001 §6 documents the serde_json 1-ulp parse caveat).
 
-## 布局
+## Layout
 
-| 路径 | 职责 |
+| Path | Role |
 |---|---|
-| `crates/trustquant-core` | 数值核心：Date/DayCounter、BS 解析引擎、契约（10 类错误）、规范化序列化+BLAKE3、manifest 组装。无 I/O、无 async |
-| `crates/trustquant-runtime` | 产品主体：工具注册/校验、manifest 存储（原子写）、重放、MCP 消息处理 |
-| `crates/trustquant-sidecar` | 外部 Python Provider 边车客户端（JSON Lines over stdio，协议见 ADR-0002） |
-| `crates/trustquant-cli` | 单一二进制 `trustquant`：run / replay / manifest / mcp / provider check |
-| `crates/trustquant-eval` | 确定性 trace Agent Eval 运行器（解释评测为定期层入口，实验标记） |
-| `fixture-generator/` | QuantLib C++ fixture 生成器（固定环境，字节级可重生成） |
-| `skills/` + `evals/` | 官方 Skill #1（期权定价与风险解释）+ Eval 用例 |
-| `data/` | 合成演示数据（固定种子，SHA256 入档） |
+| `crates/trustquant-core` | Numerical core: date/day-count, BS analytic engine, portfolio risk/stress, contract types (10-class error taxonomy), canonicalization v1 + BLAKE3, manifest assembly. No I/O, no async |
+| `crates/trustquant-runtime` | Product core: tool registry/validation, dataset store (content-addressed), provider routing, manifests, replay, MCP handler, localhost Web |
+| `crates/trustquant-sidecar` + `sidecar/` | External Python provider: JSON-Lines-over-stdio protocol v1, pinned env (PyPortfolioOpt 1.6.0 / cvxpy 1.6.7) |
+| `crates/trustquant-cli` / `-eval` / `-fixtures` | Single binary; deterministic trace Agent-Eval; fixture consumption |
+| `fixture-generator/` | QuantLib C++ generator + pure-Python portfolio oracle (byte-identical regeneration, weekly CI drift check) |
+| `skills/` + `evals/` | Three official skills + 11 deterministic eval cases (incl. injection-as-data) |
 | `adr/` | ADR-0001..0006 |
 
-## 边界（M0 明确不做）
+## Known limitations (honest list)
 
-组合优化功能（边车仅通道原型）、树/MC/第二引擎、日历体系、load_market_dataset（CSV 规则已冻结在 ADR-0005）、远程 HTTP serve、隐式联网安装、真实模型评测。重放承诺 = 同版本同环境。
+- Replay promise is **same version, same environment**; cross-version gets parsing + diff reports only.
+- Optimization is a narrow slice: long-only `min_volatility`/`max_sharpe` with weight bounds; bounded solutions are verified by invariants, not analytic weights; no shorting/leverage/transaction costs; "solver succeeded" is never sold as "globally optimal".
+- `load_market_dataset` accepts `date,ticker,close` CSVs (ADR-0005 rules); missing values are rejected, not imputed.
+- serde_json's text parser shifts certain 17-digit decimals by one ulp **deterministically** (ADR-0001 §6); in-process digests and replay are unaffected.
+- The sidecar `die` channel test can be flaky on a loaded 2-core machine during parallel compilation (retry-wrapped; the channel is verified manually and in CI).
+- WASM is a M0-M2 differential-validation target, not a shipped interface.
 
-## 血统
+## Lineage
 
-见 [RELEASE-LINEAGE.md](RELEASE-LINEAGE.md)：QuantLib 1.33（Ubuntu 24.04 apt 锁定）、rustc 1.99.1、python3.12；v1 存档（vicfei/quantrust@9d40ae9）的 ADR 与 fixture 生成器经重新验收后回收。
+[RELEASE-LINEAGE.md](RELEASE-LINEAGE.md) — QuantLib 1.33 (Ubuntu 24.04 apt, pinned), rustc 1.99.1, python3.12 provider env; v1 archive `vicfei/quantrust@9d40ae9` salvaged with re-acceptance.
 
-## 许可证
+## License
 
-Apache-2.0（见 [LICENSE](LICENSE)）。代码复制进本仓库前必须审查来源许可证与 NOTICE 要求；GPL/AGPL 代码不得进入宽松许可核心。
+Apache-2.0 ([LICENSE](LICENSE)). GPL/AGPL code must not enter this core; third-party code copies are license-reviewed with NOTICE obligations.

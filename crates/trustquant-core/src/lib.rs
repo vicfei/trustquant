@@ -7,6 +7,7 @@ pub mod contract;
 pub mod date;
 pub mod daycount;
 pub mod manifest;
+pub mod portfolio;
 
 use contract::{ErrorEnvelope, ErrorType, ToolOutput};
 use serde_json::Value;

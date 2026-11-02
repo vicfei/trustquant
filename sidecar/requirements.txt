@@ -1,0 +1,11 @@
+# External Python Provider — pinned environment (ADR-0002: explicit install,
+# never auto-installed on first run). Reproduce with:
+#   trustquant provider install   (or) python3 -m venv .venv && .venv/bin/pip install -r sidecar/requirements.txt
+PyPortfolioOpt==1.6.0
+cvxpy==1.6.7
+numpy==2.2.6
+scipy==1.16.3
+pandas==2.3.2
+scikit-learn==1.7.2
+scikit-base==0.13.2
+packaging==26.2

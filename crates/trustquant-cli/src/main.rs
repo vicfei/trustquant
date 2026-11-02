@@ -11,7 +11,7 @@
 use serde_json::json;
 use std::process::ExitCode;
 use trustquant_core::contract::RequestEnvelope;
-use trustquant_runtime::{mcp, replay_calculation, store::ManifestStore};
+use trustquant_runtime::{mcp, replay_calculation};
 
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
@@ -21,6 +21,7 @@ fn main() -> ExitCode {
         Some("manifest") => cmd_manifest(&args[1..]),
         Some("mcp") => ExitCode::from(u8::try_from(mcp::run_stdio()).unwrap_or(1)),
         Some("provider") => cmd_provider(&args[1..]),
+        Some("serve") => cmd_serve(&args[1..]),
         Some("version") | Some("--version") => {
             println!(
                 "trustquant {} (runtime {}, core {}, schema {})",
@@ -33,7 +34,7 @@ fn main() -> ExitCode {
         }
         _ => {
             eprintln!(
-                "usage: trustquant <command>\n  run request.json\n  replay <calculation-id> [--json]\n  manifest <calculation-id>\n  mcp\n  provider check\n  version"
+                "usage: trustquant <command>\n  run request.json\n  replay <calculation-id> [--json]\n  manifest <calculation-id>\n  mcp\n  serve [--port N]\n  provider check|install\n  version"
             );
             ExitCode::from(2)
         }
@@ -64,14 +65,14 @@ fn cmd_run(args: &[String]) -> ExitCode {
         println!("{}", serde_json::to_string_pretty(&env).unwrap());
         return ExitCode::FAILURE;
     }
-    let store = ManifestStore::default_store();
-    let (envelope, manifest) = trustquant_runtime::execute_and_record(&store, &request);
+    let (envelope, manifest) = trustquant_runtime::execute_and_record(&request);
     println!("{}", serde_json::to_string_pretty(&envelope).unwrap());
     if let Some(m) = manifest {
         eprintln!(
             "recorded calculation_id={} at {}",
             m.calculation_id,
-            store
+            trustquant_runtime::ctx()
+                .manifest_store
                 .calculations_dir()
                 .join(format!("{}.json", m.calculation_id))
                 .display()
@@ -90,8 +91,7 @@ fn cmd_replay(args: &[String]) -> ExitCode {
         return ExitCode::from(2);
     };
     let as_json = args.iter().any(|a| a == "--json");
-    let store = ManifestStore::default_store();
-    match replay_calculation(&store, &id) {
+    match replay_calculation(&id) {
         Ok(report) => {
             if as_json {
                 println!("{}", serde_json::to_string_pretty(&report).unwrap());
@@ -123,8 +123,7 @@ fn cmd_manifest(args: &[String]) -> ExitCode {
         eprintln!("usage: trustquant manifest <calculation-id>");
         return ExitCode::from(2);
     };
-    let store = ManifestStore::default_store();
-    match trustquant_runtime::get_manifest(&store, &id) {
+    match trustquant_runtime::get_manifest(&id) {
         Ok(m) => {
             println!("{}", serde_json::to_string_pretty(&m).unwrap());
             ExitCode::SUCCESS
@@ -138,9 +137,46 @@ fn cmd_manifest(args: &[String]) -> ExitCode {
 }
 
 fn cmd_provider(args: &[String]) -> ExitCode {
+    if args.first().map(String::as_str) == Some("install") {
+        // Explicit, user-invoked installation (ADR-0002 §3). This is the ONLY
+        // code path that touches the network for the provider — first-run
+        // computation never installs anything.
+        let root = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../..");
+        let venv = root.join(".venv");
+        let reqs = root.join("sidecar/requirements.txt");
+        println!(
+            "creating venv at {} (explicit install; this step uses the network)",
+            venv.display()
+        );
+        let status = std::process::Command::new("python3")
+            .args(["-m", "venv", venv.to_str().unwrap()])
+            .status()
+            .map_err(|e| format!("python3 -m venv failed: {e}"));
+        match status {
+            Ok(st) if st.success() => {}
+            other => {
+                eprintln!("venv creation failed: {other:?}");
+                return ExitCode::FAILURE;
+            }
+        }
+        let pip = venv.join("bin/pip");
+        let index = std::env::var("PIP_INDEX_URL")
+            .unwrap_or_else(|_| "https://pypi.org/simple".to_string());
+        println!("installing pinned requirements from {reqs:?} via {index}");
+        let st = std::process::Command::new(pip)
+            .args(["install", "-r", reqs.to_str().unwrap(), "-i", &index])
+            .status()
+            .expect("pip spawn failed");
+        if st.success() {
+            println!("provider installed; verify with: trustquant provider check");
+            return ExitCode::SUCCESS;
+        }
+        eprintln!("pip install failed; set PIP_INDEX_URL to a reachable mirror if needed");
+        return ExitCode::FAILURE;
+    }
     if args.first().map(String::as_str) != Some("check") {
         eprintln!(
-            "usage: trustquant provider check   (checks the external Python sidecar channel)"
+            "usage: trustquant provider check   (channel check)\n       trustquant provider install (explicit pinned env setup)"
         );
         return ExitCode::from(2);
     }
@@ -178,6 +214,22 @@ fn cmd_provider(args: &[String]) -> ExitCode {
             let env = e.into_envelope();
             println!("{}", serde_json::to_string_pretty(&env).unwrap());
             println!("PROVIDER: UNAVAILABLE (no silent fallback; see ADR-0002)");
+            ExitCode::FAILURE
+        }
+    }
+}
+
+fn cmd_serve(args: &[String]) -> ExitCode {
+    let port = args
+        .iter()
+        .position(|a| a == "--port")
+        .and_then(|i| args.get(i + 1))
+        .and_then(|v| v.parse::<u16>().ok())
+        .unwrap_or(7860);
+    match trustquant_runtime::http::serve(port) {
+        Ok(()) => ExitCode::SUCCESS,
+        Err(e) => {
+            eprintln!("serve failed: {e}");
             ExitCode::FAILURE
         }
     }

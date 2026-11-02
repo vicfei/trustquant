@@ -8,6 +8,7 @@
 //! envelope; protocol mistakes return JSON-RPC errors.
 
 use crate::{execute_and_record, known_tools, replay_calculation, tool_descriptors};
+
 use serde_json::{Value, json};
 use trustquant_core::contract::RequestEnvelope;
 
@@ -63,12 +64,11 @@ pub fn handle_message(msg: &Value) -> Option<Value> {
                 return Some(tool_result(i, &envelope));
             }
             if tool == "replay_calculation" {
-                let store = crate::store::ManifestStore::default_store();
                 let cid = request.params["calculation_id"]
                     .as_str()
                     .unwrap_or_default()
                     .to_string();
-                let envelope = match replay_calculation(&store, &cid) {
+                let envelope = match replay_calculation(&cid) {
                     Ok(report) => {
                         let mut env = crate::ResponseEnvelope::success(
                             &trustquant_core::contract::ToolOutput {
@@ -87,12 +87,11 @@ pub fn handle_message(msg: &Value) -> Option<Value> {
                 return Some(tool_result(i, &envelope));
             }
             if tool == "get_calculation_manifest" {
-                let store = crate::store::ManifestStore::default_store();
                 let cid = request.params["calculation_id"]
                     .as_str()
                     .unwrap_or_default()
                     .to_string();
-                let envelope = match crate::get_manifest(&store, &cid) {
+                let envelope = match crate::get_manifest(&cid) {
                     Ok(m) => crate::ResponseEnvelope::success(
                         &trustquant_core::contract::ToolOutput {
                             engine_id: "runtime.manifest.v1",
@@ -106,8 +105,7 @@ pub fn handle_message(msg: &Value) -> Option<Value> {
                 };
                 return Some(tool_result(i, &envelope));
             }
-            let store = crate::store::ManifestStore::default_store();
-            let (envelope, _) = execute_and_record(&store, &request);
+            let (envelope, _) = execute_and_record(&request);
             Some(tool_result(i, &envelope))
         }
         "" => error(id, -32600, "missing method"),

@@ -38,6 +38,10 @@ impl ManifestStore {
         }
     }
 
+    pub fn base_dir(&self) -> &std::path::Path {
+        &self.base
+    }
+
     pub fn calculations_dir(&self) -> PathBuf {
         self.base.join("calculations")
     }

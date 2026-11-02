@@ -1,0 +1,8 @@
+{
+ "adr": "ADR-0003",
+ "family": "risk_metrics",
+ "generated_by": "portfolio_oracle.py (pure stdlib, independent implementation)",
+ "input": "data/demo_prices.csv (seed 20260101) + embedded hand-check cases",
+ "note": "Daily simple returns; daily-rebalanced fixed weights; 252-day annualization; ddof=1.",
+ "schema": 1
+}
