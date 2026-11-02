@@ -1,0 +1,15 @@
+{
+  "schema_version": "0.1",
+  "request_id": "demo-001",
+  "tool": "price_european_option",
+  "params": {
+    "option_type": "call",
+    "spot": 100.0,
+    "strike": 105.0,
+    "risk_free_rate": 0.05,
+    "dividend_yield": 0.02,
+    "volatility": 0.2,
+    "valuation_date": "2023-06-21",
+    "maturity_date": "2024-06-20"
+  }
+}

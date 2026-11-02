@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "family": "black_scholes",
+  "note": "M0 oracle for price_european_option (engine bs_analytic.v1). Category coverage per ADR-0003 §4: call/put x ITM/OTM/ATM, maturities 1d-10y, vol 1e-6 to 0.9, zero and negative rates, dividend and no-dividend.",
+  "generated_by": "qt-fixgen 0.1.0 (salvaged from v1 vicfei/quantrust@9d40ae9, re-accepted 2026-11-03)",
+  "quantlib": {
+    "distribution": "Ubuntu 24.04 (noble) apt libquantlib0-dev",
+    "package_version": "1.33-1",
+    "upstream_release": "1.33"
+  },
+  "build": {
+    "os": "Ubuntu 24.04.4 LTS",
+    "compiler": "g++ 13.3.0",
+    "flags": "-O2 -std=c++17",
+    "fast_math": false
+  },
+  "units": {
+    "npv": "currency units per unit spot-notional (spot dimensionless in M0)",
+    "delta": "per 1.00 spot",
+    "gamma": "per 1.00 spot squared",
+    "vega": "per 1.00 volatility (NOT per 1%)",
+    "theta": "per year (QuantLib Greeks convention)"
+  },
+  "adr": "ADR-0003"
+}

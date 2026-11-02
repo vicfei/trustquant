@@ -1,0 +1,11 @@
+{
+  "skill": "option-pricing-risk",
+  "version": "0.1.0",
+  "status": "official-m0",
+  "trace_case": "evals/cases/skill_option_pricing_trace.json",
+  "steps": [
+    "price_european_option",
+    "get_calculation_manifest",
+    "replay_calculation"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "explain_option_units",
+  "status": "experimental",
+  "note": "Executed by the periodic model layer only; never a CI gate.",
+  "task": "The tool returned npv=6.99, vega=39.10, theta=-5.04 for a 1y ATM-ish call. Explain to a user what these mean with correct units and one caveat each.",
+  "expected_behavior": {
+    "must_mention": [
+      "npv is per unit of spot (unit-price convention), total = npv x quantity",
+      "vega is per 1.00 volatility and must be converted explicitly when quoted per 1%",
+      "theta is per year; per-day requires dividing and stating the convention",
+      "model/assumptions: BSM, Act/365F, continuously compounded rates"
+    ],
+    "must_not": [
+      "quote vega per 1% without conversion",
+      "promise cross-version replay or bitwise QuantLib equality",
+      "estimate prices for unsupported styles"
+    ]
+  },
+  "rubric": [
+    { "criterion": "unit-correct vega statement", "weight": 2 },
+    { "criterion": "unit-correct theta statement", "weight": 2 },
+    { "criterion": "npv notional scaling", "weight": 1 },
+    { "criterion": "no fabricated guarantees", "weight": 2 }
+  ],
+  "judge_policy": { "model": "record-per-run", "prompt_version": "record-per-run", "human_calibration": "periodic sample" }
+}

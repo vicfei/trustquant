@@ -1,0 +1,26 @@
+name: fixtures-regen
+
+# Manual + weekly drift check: committed fixtures must be exactly what the
+# pinned environment regenerates (ADR-0003 §4).
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 4 * * 1"
+
+jobs:
+  regen:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: install QuantLib baseline
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential libquantlib0-dev
+      - name: regenerate
+        run: make -C fixture-generator regen
+      - name: verify byte-identical
+        run: |
+          git diff --exit-code --stat -- fixtures/ || {
+            git diff -- fixtures/ | head -50
+            echo "FIXTURES DRIFTED"
+            exit 1
+          }

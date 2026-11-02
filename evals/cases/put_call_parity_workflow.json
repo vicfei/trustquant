@@ -1,0 +1,34 @@
+{
+  "id": "put_call_parity_workflow",
+  "category": "multi_step_workflow",
+  "steps": [
+    {
+      "tool": "price_european_option",
+      "params": {
+        "option_type": "call",
+        "spot": 100.0,
+        "strike": 100.0,
+        "risk_free_rate": 0.0,
+        "dividend_yield": 0.0,
+        "volatility": 0.2,
+        "valuation_date": "2023-06-21",
+        "maturity_date": "2024-06-20"
+      },
+      "expect": { "status": "success", "capture_npv": "npv" }
+    },
+    {
+      "tool": "price_european_option",
+      "params": {
+        "option_type": "put",
+        "spot": 100.0,
+        "strike": 100.0,
+        "risk_free_rate": 0.0,
+        "dividend_yield": 0.0,
+        "volatility": 0.2,
+        "valuation_date": "2023-06-21",
+        "maturity_date": "2024-06-20"
+      },
+      "expect": { "status": "success", "capture_npv": "npv", "cross_step_check": "put_call_parity" }
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+.PHONY: all test fmt clippy regen demo provider clean
+
+all: test
+
+fmt:
+	cargo fmt --all --check
+
+clippy:
+	cargo clippy --workspace --all-targets -- -D warnings
+
+test: fmt clippy
+	cargo test --workspace
+
+demo:
+	cargo build -p finstrument-cli
+	mkdir -p $(FINSTRUMENT_DATA_DIR)
+	./target/debug/finstrument run examples/price_call.json
+	CID=$$(ls $(FINSTRUMENT_DATA_DIR)/calculations | head -1 | sed 's/\.json//'); \
+	./target/debug/finstrument replay $$CID
+
+provider:
+	cargo build -p finstrument-cli
+	./target/debug/finstrument provider check
+
+regen:
+	$(MAKE) -C fixture-generator regen
+	python3 data/gen_synthetic_prices.py
+
+clean:
+	cargo clean
+	$(MAKE) -C fixture-generator clean

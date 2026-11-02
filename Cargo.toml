@@ -1,0 +1,26 @@
+[workspace]
+resolver = "3"
+members = [
+    "crates/finstrument-core",
+    "crates/finstrument-runtime",
+    "crates/finstrument-sidecar",
+    "crates/finstrument-fixtures",
+    "crates/finstrument-eval",
+    "crates/finstrument-cli",
+]
+
+[workspace.package]
+version = "0.0.1"
+edition = "2024"
+license = "Apache-2.0"
+repository = "https://github.com/vicfei/finstrument"
+
+[workspace.dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+blake3 = "1"
+libm = "0.2"
+
+[profile.release]
+opt-level = 2
+debug = false

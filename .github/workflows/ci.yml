@@ -1,0 +1,46 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    # ubuntu-24.04 pinned: fixture baseline (apt libquantlib0-dev 1.33-1) is
+    # tied to noble; python3 present for sidecar channel tests.
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@1.99.1
+        with:
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+      - name: fmt
+        run: cargo fmt --all --check
+      - name: clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: test (fixtures + invariants + conformance + sidecar + eval)
+        env:
+          FINSTRUMENT_DATA_DIR: /tmp/finstr-ci-data
+        run: |
+          mkdir -p $FINSTRUMENT_DATA_DIR
+          cargo test --workspace
+      - name: demo replay round-trip
+        env:
+          FINSTRUMENT_DATA_DIR: /tmp/finstr-ci-demo
+        run: |
+          mkdir -p $FINSTRUMENT_DATA_DIR
+          cargo build -p finstrument-cli
+          ./target/debug/finstrument run examples/price_call.json > /dev/null
+          CID=$(ls $FINSTRUMENT_DATA_DIR/calculations | head -1 | sed 's/\.json//')
+          ./target/debug/finstrument replay "$CID"
+      - name: provider channel check
+        run: |
+          cargo build -p finstrument-cli
+          ./target/debug/finstrument provider check
+      - name: synthetic data reproducibility
+        run: |
+          python3 data/gen_synthetic_prices.py
+          sha256sum data/demo_prices.csv
+          git diff --exit-code -- data/ || { echo "SYNTHETIC DATA DRIFTED"; exit 1; }

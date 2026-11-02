@@ -1,0 +1,32 @@
+{
+  "id": "invalid_date_recovery",
+  "category": "error_recovery",
+  "steps": [
+    {
+      "tool": "price_european_option",
+      "params": {
+        "option_type": "call",
+        "spot": 100.0,
+        "strike": 100.0,
+        "risk_free_rate": 0.05,
+        "volatility": 0.2,
+        "valuation_date": "2023-02-30",
+        "maturity_date": "2024-06-20"
+      },
+      "expect": { "status": "error", "error_type": "invalid_input", "correctable": true }
+    },
+    {
+      "tool": "price_european_option",
+      "params": {
+        "option_type": "call",
+        "spot": 100.0,
+        "strike": 100.0,
+        "risk_free_rate": 0.05,
+        "volatility": 0.2,
+        "valuation_date": "2023-02-28",
+        "maturity_date": "2024-06-20"
+      },
+      "expect": { "status": "success" }
+    }
+  ]
+}

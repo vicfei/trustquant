@@ -1,0 +1,12 @@
+{
+  "id": "schema_version_reject",
+  "category": "schema",
+  "steps": [
+    {
+      "tool": "price_european_option",
+      "schema_version": "9.0",
+      "params": { "option_type": "call", "spot": 100.0, "strike": 100.0, "risk_free_rate": 0.05, "volatility": 0.2, "valuation_date": "2023-06-21", "maturity_date": "2024-06-20" },
+      "expect": { "status": "error", "error_type": "invalid_input", "correctable": false }
+    }
+  ]
+}

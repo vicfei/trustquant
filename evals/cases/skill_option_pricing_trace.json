@@ -1,0 +1,41 @@
+{
+  "id": "skill_option_pricing_trace",
+  "category": "skill_trace",
+  "skill": "option-pricing-risk",
+  "steps": [
+    {
+      "tool": "price_european_option",
+      "note": "skill step 1: price and get Greeks",
+      "params": {
+        "option_type": "call",
+        "spot": 100.0,
+        "strike": 105.0,
+        "risk_free_rate": 0.05,
+        "dividend_yield": 0.02,
+        "volatility": 0.2,
+        "valuation_date": "2023-06-21",
+        "maturity_date": "2024-06-20"
+      },
+      "expect": {
+        "status": "success",
+        "result_path_eq": "result.units.theta",
+        "capture_npv": "npv"
+      }
+    },
+    {
+      "tool": "get_calculation_manifest",
+      "note": "skill step 2: fetch the calculation manifest",
+      "params": { "calculation_id": "$calculation_id" },
+      "expect": { "status": "success", "result_path_eq": "result.manifest_hash" }
+    },
+    {
+      "tool": "replay_calculation",
+      "note": "skill step 3: replay and confirm digests match",
+      "params": { "calculation_id": "$calculation_id" },
+      "expect": {
+        "status": "success",
+        "result_fields": { "manifest_hash_valid": true, "result_digest_match": true }
+      }
+    }
+  ]
+}

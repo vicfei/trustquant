@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "family": "date_daycount",
+  "generated_by": "qt-fixgen 0.1.0",
+  "quantlib": {
+    "distribution": "Ubuntu 24.04 (noble) apt libquantlib0-dev",
+    "package_version": "1.33-1",
+    "upstream_release": "1.33"
+  },
+  "build": {
+    "os": "Ubuntu 24.04.4 LTS",
+    "compiler": "g++ 13.3.0",
+    "flags": "-O2 -std=c++17",
+    "fast_math": false
+  },
+  "comparison": {
+    "discrete": "exact",
+    "float": "atol+rtol per metric (anchor granularity = metric x scale_type)"
+  },
+  "adr": "ADR-0001"
+}
