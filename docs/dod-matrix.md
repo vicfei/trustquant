@@ -17,13 +17,13 @@
 
 | 门禁 | 证据 |
 |---|---|
-| 1 三入口等价 | `crates/finstrument-cli/tests/conformance.rs`（lib/MCP/CLI 同请求同 result digest；同坏请求同错误信封） |
+| 1 三入口等价 | `crates/florin-cli/tests/conformance.rs`（lib/MCP/CLI 同请求同 result digest；同坏请求同错误信封） |
 | 2 口径显式 | 结果 `conventions` + 逐指标 `units`；默认 Actual365Fixed/连续复利可显式覆盖 |
 | 3 fixtures+不变量进 CI | `core/tests/black_scholes_fixtures.rs`（18 组）+ `bs.rs` 内 parity 网格/边界/零波动率极限 |
 | 4 清单持久化 | `runtime/src/store.rs`（原子写：tmp+rename+fsync；路径遍历防护） |
 | 5 重放与缺失态 | conformance 的 replay 往返 + `replay_unavailable` 路径测试 |
 | 6 Skill trace | `skills/option-pricing-risk.md` + `evals/cases/skill_option_pricing_trace.json`（定价→清单→重放三步，$calculation_id 动态绑定） |
-| 7 Python 边车原型 | `finstrument-sidecar`（冷启动握手/版本/echo_add 往返/超时→resource_limit/崩溃→internal_error） |
+| 7 Python 边车原型 | `florin-sidecar`（冷启动握手/版本/echo_add 往返/超时→resource_limit/崩溃→internal_error） |
 | 8 无隐式联网/无静默回退 | 代码审查（零首跑联网逻辑）+ 缺解释器→provider_unavailable 测试 |
 | 9 本矩阵 | 本文件 |
 | 10 合成数据 | `data/gen_synthetic_prices.py`（seed 20260101）+ `demo_prices.csv` + SHA256（README 记录） |

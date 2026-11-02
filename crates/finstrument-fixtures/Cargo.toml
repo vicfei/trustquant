@@ -1,9 +1,0 @@
-[package]
-name = "finstrument-fixtures"
-version.workspace = true
-edition.workspace = true
-license.workspace = true
-
-[dependencies]
-serde_json = { workspace = true }
-finstrument-core = { path = "../finstrument-core" }

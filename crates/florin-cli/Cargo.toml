@@ -1,0 +1,15 @@
+[package]
+name = "florin-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+florin-core = { path = "../florin-core" }
+florin-runtime = { path = "../florin-runtime" }
+florin-sidecar = { path = "../florin-sidecar" }
+serde_json = { workspace = true }
+
+[[bin]]
+name = "florin"
+path = "src/main.rs"

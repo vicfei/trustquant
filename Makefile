@@ -12,15 +12,15 @@ test: fmt clippy
 	cargo test --workspace
 
 demo:
-	cargo build -p finstrument-cli
-	mkdir -p $(FINSTRUMENT_DATA_DIR)
-	./target/debug/finstrument run examples/price_call.json
-	CID=$$(ls $(FINSTRUMENT_DATA_DIR)/calculations | head -1 | sed 's/\.json//'); \
-	./target/debug/finstrument replay $$CID
+	cargo build -p florin-cli
+	mkdir -p $(FLORIN_DATA_DIR)
+	./target/debug/florin run examples/price_call.json
+	CID=$$(ls $(FLORIN_DATA_DIR)/calculations | head -1 | sed 's/\.json//'); \
+	./target/debug/florin replay $$CID
 
 provider:
-	cargo build -p finstrument-cli
-	./target/debug/finstrument provider check
+	cargo build -p florin-cli
+	./target/debug/florin provider check
 
 regen:
 	$(MAKE) -C fixture-generator regen
