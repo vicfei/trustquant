@@ -19,7 +19,7 @@ M0 的请求自包含（参数内联），bundle 即清单文件本身；M1 引�
 
 ### 2. 本地存储（M0 冻结）
 - **一清单一文件 + 原子写入**（先写 `.tmp` 再 rename），不采用 JSONL（避免查找、并发写、半截记录复杂度）；
-- 默认目录：`$FLORIN_DATA_DIR` → `$XDG_DATA_HOME/florin` → `~/.local/share/florin`；清单存于 `calculations/<calculation_id>.json`；
+- 默认目录：`$TRUSTQUANT_DATA_DIR` → `$XDG_DATA_HOME/trustquant` → `~/.local/share/trustquant`；清单存于 `calculations/<calculation_id>.json`；
 - 文件名即 `calculation_id`（查找 O(1)，无索引）；
 - 保留策略：M0 不做自动清理（显式策略待真实需求）；
 - 敏感数据不默认复制进 bundle；引用优先于内联。

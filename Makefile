@@ -12,15 +12,15 @@ test: fmt clippy
 	cargo test --workspace
 
 demo:
-	cargo build -p florin-cli
-	mkdir -p $(FLORIN_DATA_DIR)
-	./target/debug/florin run examples/price_call.json
-	CID=$$(ls $(FLORIN_DATA_DIR)/calculations | head -1 | sed 's/\.json//'); \
-	./target/debug/florin replay $$CID
+	cargo build -p trustquant-cli
+	mkdir -p $(TRUSTQUANT_DATA_DIR)
+	./target/debug/trustquant run examples/price_call.json
+	CID=$$(ls $(TRUSTQUANT_DATA_DIR)/calculations | head -1 | sed 's/\.json//'); \
+	./target/debug/trustquant replay $$CID
 
 provider:
-	cargo build -p florin-cli
-	./target/debug/florin provider check
+	cargo build -p trustquant-cli
+	./target/debug/trustquant provider check
 
 regen:
 	$(MAKE) -C fixture-generator regen

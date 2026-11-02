@@ -59,62 +59,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1c66915cc5391097de7a2b0b972e8505aa33c0df401fd3a6811dbdb32881ba48"
 
 [[package]]
-name = "florin-cli"
-version = "0.0.1"
-dependencies = [
- "florin-core",
- "florin-runtime",
- "florin-sidecar",
- "serde_json",
-]
-
-[[package]]
-name = "florin-core"
-version = "0.0.1"
-dependencies = [
- "blake3",
- "florin-fixtures",
- "libm",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "florin-eval"
-version = "0.0.1"
-dependencies = [
- "florin-core",
- "florin-runtime",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "florin-fixtures"
-version = "0.0.1"
-dependencies = [
- "florin-core",
- "serde_json",
-]
-
-[[package]]
-name = "florin-runtime"
-version = "0.0.1"
-dependencies = [
- "florin-core",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "florin-sidecar"
-version = "0.0.1"
-dependencies = [
- "florin-core",
- "serde_json",
-]
-
-[[package]]
 name = "itoa"
 version = "1.0.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -214,6 +158,62 @@ dependencies = [
  "proc-macro2",
  "quote",
  "unicode-ident",
+]
+
+[[package]]
+name = "trustquant-cli"
+version = "0.0.1"
+dependencies = [
+ "serde_json",
+ "trustquant-core",
+ "trustquant-runtime",
+ "trustquant-sidecar",
+]
+
+[[package]]
+name = "trustquant-core"
+version = "0.0.1"
+dependencies = [
+ "blake3",
+ "libm",
+ "serde",
+ "serde_json",
+ "trustquant-fixtures",
+]
+
+[[package]]
+name = "trustquant-eval"
+version = "0.0.1"
+dependencies = [
+ "serde",
+ "serde_json",
+ "trustquant-core",
+ "trustquant-runtime",
+]
+
+[[package]]
+name = "trustquant-fixtures"
+version = "0.0.1"
+dependencies = [
+ "serde_json",
+ "trustquant-core",
+]
+
+[[package]]
+name = "trustquant-runtime"
+version = "0.0.1"
+dependencies = [
+ "serde",
+ "serde_json",
+ "trustquant-core",
+]
+
+[[package]]
+name = "trustquant-sidecar"
+version = "0.0.1"
+dependencies = [
+ "serde_json",
+ "trustquant-core",
 ]
 
 [[package]]

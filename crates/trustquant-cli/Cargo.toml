@@ -1,0 +1,15 @@
+[package]
+name = "trustquant-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+trustquant-core = { path = "../trustquant-core" }
+trustquant-runtime = { path = "../trustquant-runtime" }
+trustquant-sidecar = { path = "../trustquant-sidecar" }
+serde_json = { workspace = true }
+
+[[bin]]
+name = "trustquant"
+path = "src/main.rs"

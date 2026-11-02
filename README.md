@@ -1,24 +1,24 @@
-# florin
+# TrustQuant
 
 > 开放、本地优先、面向 Agent 的金融工具层：**可信数值内核 → 统一工具契约 → Provider 路由 → 计算清单与重放**。
 > 当前状态：**M0 Walking Skeleton**（库 + Runtime + CLI + MCP + Skill + 清单 + Eval 闭环）。
-> 定名 **florin**（弗罗林，中世纪金本位货币，荷兰盾符号 ƒ）；许可证 **Apache-2.0**。
+> 定名 **TrustQuant**（可信量化：数值证据、可审计、可重放）；许可证 **Apache-2.0**。
 
 ## 一分钟验证闭环
 
 ```bash
 make test                                   # fixtures + 不变量 + 三入口一致性 + 边车 + Eval
-FLORIN_DATA_DIR=/tmp/fin make demo     # 定价 → 计算清单 → 重放 (REPLAY: PASS)
+TRUSTQUANT_DATA_DIR=/tmp/fin make demo     # 定价 → 计算清单 → 重放 (REPLAY: PASS)
 make provider                               # Python 边车通道（冷启动/版本/往返）
 ```
 
 一次真实调用的样子（三个入口同一实现、同一结果）：
 
 ```bash
-florin run examples/price_call.json    # 库/CLI/MCP 三入口一致性有契约测试
-florin replay <calculation_id>         # 同版本同环境重放 + 摘要核对
-florin mcp                             # stdio MCP 服务器（协议转换，无计算逻辑）
-florin-eval run                        # 7 条确定性 Agent Eval（含 Skill trace）
+trustquant run examples/price_call.json    # 库/CLI/MCP 三入口一致性有契约测试
+trustquant replay <calculation_id>         # 同版本同环境重放 + 摘要核对
+trustquant mcp                             # stdio MCP 服务器（协议转换，无计算逻辑）
+trustquant-eval run                        # 7 条确定性 Agent Eval（含 Skill trace）
 ```
 
 结果信封携带：数值 + 逐指标单位语义（Vega=每 1.00 波动率、Theta=每年）、模型与口径（BSM、Act/365F、连续复利）、引擎/Provider/版本、`calculation_id` 与 `manifest_hash`。
@@ -35,11 +35,11 @@ florin-eval run                        # 7 条确定性 Agent Eval（含 Skill t
 
 | 路径 | 职责 |
 |---|---|
-| `crates/florin-core` | 数值核心：Date/DayCounter、BS 解析引擎、契约（10 类错误）、规范化序列化+BLAKE3、manifest 组装。无 I/O、无 async |
-| `crates/florin-runtime` | 产品主体：工具注册/校验、manifest 存储（原子写）、重放、MCP 消息处理 |
-| `crates/florin-sidecar` | 外部 Python Provider 边车客户端（JSON Lines over stdio，协议见 ADR-0002） |
-| `crates/florin-cli` | 单一二进制 `florin`：run / replay / manifest / mcp / provider check |
-| `crates/florin-eval` | 确定性 trace Agent Eval 运行器（解释评测为定期层入口，实验标记） |
+| `crates/trustquant-core` | 数值核心：Date/DayCounter、BS 解析引擎、契约（10 类错误）、规范化序列化+BLAKE3、manifest 组装。无 I/O、无 async |
+| `crates/trustquant-runtime` | 产品主体：工具注册/校验、manifest 存储（原子写）、重放、MCP 消息处理 |
+| `crates/trustquant-sidecar` | 外部 Python Provider 边车客户端（JSON Lines over stdio，协议见 ADR-0002） |
+| `crates/trustquant-cli` | 单一二进制 `trustquant`：run / replay / manifest / mcp / provider check |
+| `crates/trustquant-eval` | 确定性 trace Agent Eval 运行器（解释评测为定期层入口，实验标记） |
 | `fixture-generator/` | QuantLib C++ fixture 生成器（固定环境，字节级可重生成） |
 | `skills/` + `evals/` | 官方 Skill #1（期权定价与风险解释）+ Eval 用例 |
 | `data/` | 合成演示数据（固定种子，SHA256 入档） |

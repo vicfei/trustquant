@@ -22,23 +22,23 @@ jobs:
         run: cargo clippy --workspace --all-targets -- -D warnings
       - name: test (fixtures + invariants + conformance + sidecar + eval)
         env:
-          FLORIN_DATA_DIR: /tmp/finstr-ci-data
+          TRUSTQUANT_DATA_DIR: /tmp/finstr-ci-data
         run: |
-          mkdir -p $FLORIN_DATA_DIR
+          mkdir -p $TRUSTQUANT_DATA_DIR
           cargo test --workspace
       - name: demo replay round-trip
         env:
-          FLORIN_DATA_DIR: /tmp/finstr-ci-demo
+          TRUSTQUANT_DATA_DIR: /tmp/finstr-ci-demo
         run: |
-          mkdir -p $FLORIN_DATA_DIR
-          cargo build -p florin-cli
-          ./target/debug/florin run examples/price_call.json > /dev/null
-          CID=$(ls $FLORIN_DATA_DIR/calculations | head -1 | sed 's/\.json//')
-          ./target/debug/florin replay "$CID"
+          mkdir -p $TRUSTQUANT_DATA_DIR
+          cargo build -p trustquant-cli
+          ./target/debug/trustquant run examples/price_call.json > /dev/null
+          CID=$(ls $TRUSTQUANT_DATA_DIR/calculations | head -1 | sed 's/\.json//')
+          ./target/debug/trustquant replay "$CID"
       - name: provider channel check
         run: |
-          cargo build -p florin-cli
-          ./target/debug/florin provider check
+          cargo build -p trustquant-cli
+          ./target/debug/trustquant provider check
       - name: synthetic data reproducibility
         run: |
           python3 data/gen_synthetic_prices.py

@@ -23,13 +23,13 @@
 
 ### 3. Python 发行方式（M0 冻结顺序）
 1. 一站式包**预置锁定环境**（依赖版本与来源锁定，记录环境摘要）；
-2. 或提供**显式安装命令**（如 `florin provider install`）；
+2. 或提供**显式安装命令**（如 `trustquant provider install`）；
 3. **不做首次计算时的隐式联网安装**——理由：破坏无凭据快速开始、安装结果随时间/镜像漂移、重放环境与首装不一致、崩溃更难解释；
 4. 未安装 → `provider_unavailable` + 安装指引；
 5. `uv` 是实现候选，**不写入长期公共协议**。
 
 ### 4. M0 原型范围
-Python 边车只需验证工程通道：冷启动握手、版本上报、一次确定性往返计算、请求超时、进程崩溃、`provider_unavailable`（解释器缺失）。不提前实现组合优化功能。Python 路径可由 `FLORIN_PROVIDER_PYTHON` 覆盖（测试与异构环境用）。
+Python 边车只需验证工程通道：冷启动握手、版本上报、一次确定性往返计算、请求超时、进程崩溃、`provider_unavailable`（解释器缺失）。不提前实现组合优化功能。Python 路径可由 `TRUSTQUANT_PROVIDER_PYTHON` 覆盖（测试与异构环境用）。
 
 ## 后果
 - 轻量核心 profile 不引入任何 Python 依赖（边车是独立 crate 与进程）。

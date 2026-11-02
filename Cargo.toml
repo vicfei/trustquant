@@ -1,19 +1,19 @@
 [workspace]
 resolver = "3"
 members = [
-    "crates/florin-core",
-    "crates/florin-runtime",
-    "crates/florin-sidecar",
-    "crates/florin-fixtures",
-    "crates/florin-eval",
-    "crates/florin-cli",
+    "crates/trustquant-core",
+    "crates/trustquant-runtime",
+    "crates/trustquant-sidecar",
+    "crates/trustquant-fixtures",
+    "crates/trustquant-eval",
+    "crates/trustquant-cli",
 ]
 
 [workspace.package]
 version = "0.0.1"
 edition = "2024"
 license = "Apache-2.0"
-repository = "https://github.com/vicfei/florin"
+repository = "https://github.com/vicfei/trustquant"
 
 [workspace.dependencies]
 serde = { version = "1", features = ["derive"] }

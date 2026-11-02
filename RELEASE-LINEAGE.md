@@ -5,7 +5,7 @@
 | 里程碑 | tag | 日期 | 版本 | Rust 工具链 | QuantLib 基线 | Python | 底座 | 内容 |
 |---|---|---|---|---|---|---|---|---|
 | v1 M0（quantrust） | （未打 tag） | 2026-11-02 | 0.0.1 | rustc 1.98.1→1.99.1 | apt 1.33-1 | — | Ubuntu 24.04.4 / GH ubuntu-24.04 | 契约+fixtures+MCP/CLI+WASM 差分+Eval。**设计颠覆性改动后归档**：`vicfei/quantrust@9d40ae9`（私有） |
-| v2 M0（florin，本项目） | （未打 tag） | 2026-11-03 | 0.0.1 | rustc 1.99.1 | apt 1.33-1（date_daycount fixtures 与 v1 字节一致重验收） | 3.12（边车通道原型） | Ubuntu 24.04.4 / GH ubuntu-24.04 | ADR-0001..0006；BS 解析引擎（18 组 fixtures + parity 网格）；Runtime（manifest 原子存储/重放/unavailable 三态）；Python 边车协议原型（冷启动/超时/崩溃/版本）；三入口一致性；Skill #1 + 7 条确定性 Eval；合成演示数据 |
+| v2 M0（trustquant，本项目） | （未打 tag） | 2026-11-03 | 0.0.1 | rustc 1.99.1 | apt 1.33-1（date_daycount fixtures 与 v1 字节一致重验收） | 3.12（边车通道原型） | Ubuntu 24.04.4 / GH ubuntu-24.04 | ADR-0001..0006；BS 解析引擎（18 组 fixtures + parity 网格）；Runtime（manifest 原子存储/重放/unavailable 三态）；Python 边车协议原型（冷启动/超时/崩溃/版本）；三入口一致性；Skill #1 + 7 条确定性 Eval；合成演示数据 |
 | M1 三 Demo 公开预览（计划） | v0.1（计划） | — | — | — | — | PyPortfolioOpt（锁定环境） | 一站式包 | 期权+组合优化+风险/压力测试三 Demo、三条官方 Skill、轻量 Web |
 
 ## 回收与重新验收记录
@@ -17,7 +17,7 @@
 
 ## 更名与许可证记录
 
-- 2026-11-03：占位名 `finstrument` → 正式定名 **`florin`**（M1 公开前完成，GitHub 仓库同步更名，旧地址自动重定向）；crate/binary/环境变量（`FLORIN_DATA_DIR`、`FLORIN_PROVIDER_PYTHON`）同步更名。
+- 2026-11-03：占位名 `finstrument` → 正式定名 **`trustquant`**（M1 公开前完成，GitHub 仓库同步更名，旧地址自动重定向）；crate/binary/环境变量（`TRUSTQUANT_DATA_DIR`、`TRUSTQUANT_PROVIDER_PYTHON`）同步更名。
 - 2026-11-03：许可证确认为 **Apache-2.0**（`LICENSE` 全文入库）。
 
 ## 变更纪律
