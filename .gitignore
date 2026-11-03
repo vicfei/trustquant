@@ -3,3 +3,5 @@
 *.swp
 /.venv
 /.wheels
+/.venv-fp
+/.fpwheels

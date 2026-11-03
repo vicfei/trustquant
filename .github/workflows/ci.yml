@@ -27,7 +27,9 @@ jobs:
         run: |
           python3 -m venv .venv
           .venv/bin/pip install -r sidecar/requirements.txt
-      - name: test (fixtures + invariants + conformance + sidecar + provider oracles + eval)
+      - name: build wasm module (differential target)
+        run: cargo build -p trustquant-wasm --target wasm32-unknown-unknown --release
+      - name: test (fixtures + invariants + conformance + sidecar + provider oracles + native/wasm differential + eval)
         env:
           TRUSTQUANT_DATA_DIR: /tmp/tq-ci-data
         run: |

@@ -4,7 +4,7 @@
 
 use serde_json::Value;
 
-pub const SCHEMA_VERSION: &str = "0.1";
+pub const SCHEMA_VERSION: &str = "0.2";
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -135,6 +135,17 @@ impl ErrorEnvelope {
             field_path: None,
             correctable: false,
             retryable: false,
+            detail: None,
+        }
+    }
+
+    pub fn no_convergence(message: String) -> Self {
+        ErrorEnvelope {
+            error_type: ErrorType::NoConvergence,
+            message,
+            field_path: None,
+            correctable: true,
+            retryable: true,
             detail: None,
         }
     }

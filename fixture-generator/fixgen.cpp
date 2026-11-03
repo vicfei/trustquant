@@ -5,6 +5,7 @@
 // byte-identical. This program is the ONLY place QuantLib is used; the Rust
 // side consumes fixtures and never mirrors generator logic.
 #include <ql/quantlib.hpp>
+#include <sstream>
 
 #include <charconv>
 #include <cstdio>
@@ -275,6 +276,199 @@ int main(int argc, char** argv) {
     }
     g << "\n  ]\n}\n";
     g.close();
+
+    // ---------- calendar family (M2) ----------
+    // The date semantics below (spot, schedule dates, pillars) ARE the
+    // contract: the Rust side mirrors what is dumped here, not its memory
+    // of QuantLib behavior.
+    std::ofstream h(out_dir + "/calendar/cases.json");
+    h << "{\n  \"schema\": 1,\n  \"family\": \"calendar\",\n  \"cases\": [\n";
+    first = true;
+    {
+        Calendar target = TARGET(), weekends = WeekendsOnly(), nul = NullCalendar();
+        auto emit = [&](const std::string& id, const std::string& cal,
+                        const std::string& op, const std::string& date_in,
+                        const std::string& extra_key, const std::string& extra_val,
+                        const std::string& expected_json) {
+            if (!first) h << ",\n";
+            first = false;
+            h << "    {\"id\": " << jstr(id) << ", \"kind\": \"calendar\", \"input\": {\"calendar\": "
+              << jstr(cal) << ", \"op\": " << jstr(op) << ", \"date\": " << jstr(date_in);
+            if (!extra_key.empty())
+                h << ", " << jstr(extra_key) << ": " << extra_val;
+            h << "}, \"expected\": " << expected_json << ", \"tolerance\": {\"mode\": \"exact\"}}";
+        };
+        // business-day grid 2023-2026 + Easter edges (Good Friday/Easter Monday)
+        std::vector<std::string> grid = {
+            "2023-01-02", "2023-04-07", "2023-04-10", "2023-05-01", "2023-12-25", "2023-12-26",
+            "2024-01-01", "2024-03-29", "2024-04-01", "2024-12-24", "2024-12-31",
+            "2025-04-18", "2025-04-21", "2025-05-01", "2026-04-03", "2026-04-06",
+            "2023-06-21", "2024-06-21", "2025-06-21", "2026-06-21",
+            "2024-02-29", "2025-12-26", "2026-01-01"};
+        int n = 0;
+        for (auto& s : grid) {
+            Date d = DateParser::parseISO(s);
+            emit("cal_bday_" + std::to_string(++n), "TARGET", "is_business_day", s, "",
+                 "", std::string("{\"is_business_day\": ") + (target.isBusinessDay(d) ? "true" : "false") + "}");
+            emit("cal_wk_bday_" + std::to_string(n), "WeekendsOnly", "is_business_day", s, "",
+                 "", std::string("{\"is_business_day\": ") + (weekends.isBusinessDay(d) ? "true" : "false") + "}");
+        }
+        // adjust with four conventions
+        std::vector<std::pair<std::string, BusinessDayConvention>> convs = {
+            {"Following", Following}, {"ModifiedFollowing", ModifiedFollowing},
+            {"Preceding", Preceding}, {"Unadjusted", Unadjusted}};
+        std::vector<std::string> adj_dates = {"2023-01-01", "2023-04-07", "2024-06-15",
+                                              "2024-12-25", "2025-05-01", "2026-12-26", "2023-06-21"};
+        n = 0;
+        for (auto& s : adj_dates) {
+            Date d = DateParser::parseISO(s);
+            for (auto& [cname, conv] : convs) {
+                Date r = target.adjust(d, conv);
+                emit("cal_adj_" + std::to_string(++n), "TARGET", "adjust:" + cname, s,
+                     "", "", "{\"iso\": " + jstr(iso(r)) + ", \"weekday\": " + jstr(weekdayName(r)) + "}");
+            }
+        }
+        // advance by months with conventions (schedule-building primitive)
+        n = 0;
+        std::vector<std::tuple<std::string, int, std::string>> advs = {
+            {"2023-06-21", 6, "Following"}, {"2023-06-30", 6, "ModifiedFollowing"},
+            {"2024-02-29", 6, "ModifiedFollowing"}, {"2023-08-31", 12, "ModifiedFollowing"},
+            {"2023-01-31", 1, "ModifiedFollowing"}, {"2023-10-31", 3, "Following"}};
+        for (auto& [s, months, cname] : advs) {
+            Date d = DateParser::parseISO(s);
+            BusinessDayConvention conv = cname == "Following" ? Following : ModifiedFollowing;
+            Date r = target.advance(d, months, Months, conv);
+            emit("cal_adv_" + std::to_string(++n), "TARGET", "advance_months:" + cname, s,
+                 "months", std::to_string(months), "{\"iso\": " + jstr(iso(r)) + ", \"weekday\": " + jstr(weekdayName(r)) + "}");
+        }
+    }
+    h << "\n  ]\n}\n";
+    h.close();
+
+    // ---------- rates family (M2): curve bootstrap + swap pricing ----------
+    std::ofstream k(out_dir + "/rates/cases.json");
+    k << "{\n  \"schema\": 1,\n  \"family\": \"rates\",\n  \"cases\": [\n";
+    first = true;
+    {
+        Date today(21, June, 2023);
+        Settings::instance().evaluationDate() = today;
+        Calendar cal = TARGET();
+        Date spot = cal.advance(today, 2, Days);
+        RelinkableHandle<YieldTermStructure> curveHandle;
+        auto index = ext::make_shared<IborIndex>(
+            "Euribor6M", 6 * Months, 2, EURCurrency(), cal, ModifiedFollowing,
+            false, Actual360(), curveHandle);
+
+        struct Scenario { std::string id; Real dep6m; std::vector<Real> swaps; };
+        std::vector<Scenario> scenarios = {
+            {"flat", 0.030, {0.030, 0.030, 0.030, 0.030, 0.030, 0.030, 0.030, 0.030, 0.030, 0.030}},
+            {"upward", 0.025, {0.027, 0.028, 0.029, 0.030, 0.031, 0.032, 0.033, 0.034, 0.035, 0.036}},
+            {"inverted", 0.040, {0.038, 0.036, 0.034, 0.033, 0.032, 0.031, 0.030, 0.029, 0.028, 0.027}},
+        };
+
+        Actual365Fixed dc365;
+        Thirty360 dc30e(Thirty360::European);
+
+        for (auto& sc : scenarios) {
+            std::vector<ext::shared_ptr<RateHelper>> helpers;
+            helpers.push_back(ext::make_shared<DepositRateHelper>(
+                sc.dep6m, 6 * Months, 2, cal, ModifiedFollowing, false, Actual360()));
+            for (int i = 0; i < 10; ++i)
+                helpers.push_back(ext::make_shared<SwapRateHelper>(
+                    sc.swaps[i], (i + 1) * Years, cal, Annual, ModifiedFollowing,
+                    dc30e, index));
+
+            auto curve = ext::make_shared<PiecewiseYieldCurve<Discount, LogLinear>>(
+                spot, helpers, dc365);
+            curve->discount(1.0); // force bootstrap
+
+            // dump pillars + discounts + zero rates + helper residuals
+            std::ostringstream nodes, zeros, residuals;
+            for (Size i = 0; i < curve->dates().size(); ++i) {
+                if (i) { nodes << ","; zeros << ","; }
+                nodes << "\"" << iso(curve->dates()[i]) << "\":" << jnum(curve->data()[i]);
+                zeros << "\"" << iso(curve->dates()[i]) << "\":" << jnum(curve->zeroRate(curve->dates()[i], dc365, Continuous).rate());
+            }
+            for (Size i = 0; i < helpers.size(); ++i) {
+                if (i) residuals << ",";
+                residuals << jnum(helpers[i]->impliedQuote() - helpers[i]->quote()->value());
+            }
+
+            curveHandle.linkTo(curve);
+
+            // swap cases per scenario: payer/receiver 5Y off-market, payer 10Y
+            struct SwapCase { std::string id; VanillaSwap::Type type; int years; Real fixed_rate; };
+            std::vector<SwapCase> swaps = {
+                {sc.id + "_payer5y_off", VanillaSwap::Type::Payer, 5, 0.020},
+                {sc.id + "_rec10y_off", VanillaSwap::Type::Receiver, 10, 0.045},
+                {sc.id + "_payer3y_atm", VanillaSwap::Type::Payer, 3, 0.0},
+            };
+            for (auto& swp : swaps) {
+                Real fixedRate = swp.fixed_rate == 0.0 ? 0.0 : swp.fixed_rate;
+                Date maturity = cal.advance(spot, swp.years, Years, Unadjusted);
+                Schedule fs(spot, maturity, Period(Annual), cal, ModifiedFollowing,
+                            ModifiedFollowing, DateGeneration::Forward, false);
+                Schedule vs(spot, maturity, Period(Semiannual), cal, ModifiedFollowing,
+                            ModifiedFollowing, DateGeneration::Forward, false);
+                VanillaSwap swap(swp.type, 1.0, fs, fixedRate, dc30e, vs, index, 0.0, Actual360());
+                swap.setPricingEngine(ext::make_shared<DiscountingSwapEngine>(curveHandle));
+                Real fair = swap.fairRate();
+                if (swp.fixed_rate == 0.0) { // atm case: re-price at fair
+                    fixedRate = fair; // the dumped input must carry the fair rate
+                    swap = VanillaSwap(swp.type, 1.0, fs, fair, dc30e, vs, index, 0.0, Actual360());
+                    swap.setPricingEngine(ext::make_shared<DiscountingSwapEngine>(curveHandle));
+                }
+                // dump legs: dates + year fractions + amounts (fixed) / dates (float)
+                std::ostringstream fixleg, floatleg;
+                const auto& fleg = swap.fixedLeg();
+                for (Size i = 0; i < fleg.size(); ++i) {
+                    auto cpn = ext::dynamic_pointer_cast<FixedRateCoupon>(fleg[i]);
+                    if (i) fixleg << ",";
+                    fixleg << "{\"date\": \"" << iso(cpn->date()) << "\", \"yf\": "
+                           << jnum(dc30e.yearFraction(cpn->accrualStartDate(), cpn->accrualEndDate()))
+                           << ", \"amount\": " << jnum(cpn->amount()) << "}";
+                }
+                const auto& lleg = swap.floatingLeg();
+                for (Size i = 0; i < lleg.size(); ++i) {
+                    auto cpn = ext::dynamic_pointer_cast<FloatingRateCoupon>(lleg[i]);
+                    if (i) floatleg << ",";
+                    floatleg << "{\"date\": \"" << iso(cpn->date()) << "\", \"yf\": "
+                           << jnum(cpn->accrualPeriod()) << "}";
+                }
+                if (!first) k << ",\n";
+                first = false;
+                k << "    {\"id\": " << jstr(swp.id) << ", \"kind\": \"swap\", \"input\": {\"scenario\": "
+                  << jstr(sc.id) << ", \"eval_date\": " << jstr(iso(today))
+                  << ", \"swap_type\": " << jstr(swp.type == VanillaSwap::Type::Payer ? "payer" : "receiver")
+                  << ", \"years\": " << swp.years << ", \"fixed_rate\": " << jnum(fixedRate)
+                  << "}, \"expected\": {\"npv\": " << jnum(swap.NPV())
+                  << ", \"fair_rate\": " << jnum(fair)
+                  << ", \"fixed_leg_npv\": " << jnum(swap.fixedLegNPV())
+                  << ", \"floating_leg_npv\": " << jnum(swap.floatingLegNPV())
+                  << ", \"fixed_leg\": [" << fixleg.str() << "]"
+                  << ", \"float_leg_dates\": [" << floatleg.str() << "]"
+                  << "}, \"tolerance\": {\"mode\": \"mixed\", \"exact_metrics\": [], "
+                     "\"float_metrics\": {\"npv\": {\"atol\": 1e-10, \"rtol\": 1e-9, \"scale_type\": "
+                     "\"unit_notional\"}, \"fair_rate\": {\"atol\": 1e-11, \"rtol\": 1e-9, "
+                     "\"scale_type\": \"expected_magnitude\"}, \"fixed_leg_npv\": {\"atol\": 1e-10, "
+                     "\"rtol\": 1e-9, \"scale_type\": \"unit_notional\"}, \"floating_leg_npv\": "
+                     "{\"atol\": 1e-10, \"rtol\": 1e-9, \"scale_type\": \"unit_notional\"}}}}";
+            }
+            if (!first) k << ",\n";
+            first = false;
+            k << "    {\"id\": " << jstr("curve_" + sc.id) << ", \"kind\": \"curve\", \"input\": {\"eval_date\": "
+              << jstr(iso(today)) << ", \"deposit_6m\": " << jnum(sc.dep6m) << ", \"swap_rates_1y_10y\": [";
+            for (int i = 0; i < 10; ++i) k << (i ? "," : "") << jnum(sc.swaps[i]);
+            k << "]}, \"expected\": {\"spot_date\": " << jstr(iso(spot))
+              << ", \"pillar_dates\": {" << nodes.str() << "}"
+              << ", \"zero_rates_cont_365\": {" << zeros.str() << "}"
+              << ", \"helper_residuals\": [" << residuals.str() << "]"
+              << "}, \"tolerance\": {\"mode\": \"mixed\", \"exact_metrics\": [], \"float_metrics\": "
+                 "{\"df_max_abs\": {\"atol\": 1e-10, \"rtol\": 1e-9, \"scale_type\": \"expected_magnitude\"}}}}";
+        }
+    }
+    k << "\n  ]\n}\n";
+    k.close();
 
     std::cout << "fixtures written to " << out_dir << "\n";
     return 0;

@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "family": "rates",
+  "note": "M2 single-curve slice: 6M deposit (Act/360) + 1Y-10Y annual swaps (30E/360 fixed vs 6M Act/360 float), spot start T+2 TARGET, PiecewiseYieldCurve<Discount, LogLinear>. The dumped schedule dates, pillar dates and discounts ARE the contract; helper residuals must be ~0.",
+  "generated_by": "qt-fixgen 0.1.0",
+  "quantlib": {
+    "distribution": "Ubuntu 24.04 (noble) apt libquantlib0-dev",
+    "package_version": "1.33-1",
+    "upstream_release": "1.33"
+  },
+  "build": {
+    "os": "Ubuntu 24.04.4 LTS",
+    "compiler": "g++ 13.3.0",
+    "flags": "-O2 -std=c++17",
+    "fast_math": false
+  },
+  "scenarios": ["flat", "upward", "inverted"],
+  "zero_rate_convention": "continuous compounding, Act/365F",
+  "adr": "ADR-0001"
+}

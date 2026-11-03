@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "family": "calendar",
+  "note": "M2 EUR use case: TARGET (+WeekendsOnly/NullCalendar as test baselines), Following/ModifiedFollowing/Preceding/Unadjusted, month advance. Dates are EXACT equality — the dumped dates ARE the contract.",
+  "generated_by": "qt-fixgen 0.1.0",
+  "quantlib": {
+    "distribution": "Ubuntu 24.04 (noble) apt libquantlib0-dev",
+    "package_version": "1.33-1",
+    "upstream_release": "1.33"
+  },
+  "build": {
+    "os": "Ubuntu 24.04.4 LTS",
+    "compiler": "g++ 13.3.0",
+    "flags": "-O2 -std=c++17",
+    "fast_math": false
+  },
+  "coverage": "2023-2026 incl. Easter edge years, year boundaries, month-end clamping",
+  "adr": "ADR-0001"
+}

@@ -2,12 +2,14 @@
 //! state (v2 architecture §3.1). Entry point: `dispatch`.
 
 pub mod bs;
+pub mod calendar;
 pub mod canonical;
 pub mod contract;
 pub mod date;
 pub mod daycount;
 pub mod manifest;
 pub mod portfolio;
+pub mod rates;
 
 use contract::{ErrorEnvelope, ErrorType, ToolOutput};
 use serde_json::Value;
@@ -19,6 +21,8 @@ pub const CORE_VERSION: &str = env!("CARGO_PKG_VERSION");
 pub fn dispatch(tool: &str, params: &Value) -> Result<ToolOutput, ErrorEnvelope> {
     match tool {
         "price_european_option" => bs::price_european_option_tool(params),
+        "bootstrap_yield_curve" => rates::bootstrap_yield_curve_tool(params),
+        "price_vanilla_swap" => rates::price_vanilla_swap_tool(params),
         other => Err(ErrorEnvelope {
             error_type: ErrorType::UnsupportedFeature,
             message: format!("tool '{other}' is not served by the built-in provider"),
@@ -30,7 +34,11 @@ pub fn dispatch(tool: &str, params: &Value) -> Result<ToolOutput, ErrorEnvelope>
     }
 }
 
-pub const BUILTIN_TOOLS: &[&str] = &["price_european_option"];
+pub const BUILTIN_TOOLS: &[&str] = &[
+    "price_european_option",
+    "bootstrap_yield_curve",
+    "price_vanilla_swap",
+];
 
 #[cfg(test)]
 mod tests {

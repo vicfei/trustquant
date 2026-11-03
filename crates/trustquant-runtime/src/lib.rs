@@ -117,7 +117,9 @@ pub fn execute(tool: &str, params: &Value, request_id: Option<&str>) -> Response
 
 fn dispatch(tool: &str, params: &Value) -> Result<ToolOutput, ErrorEnvelope> {
     match tool {
-        "price_european_option" => trustquant_core::dispatch(tool, params),
+        "price_european_option" | "bootstrap_yield_curve" | "price_vanilla_swap" => {
+            trustquant_core::dispatch(tool, params)
+        }
         "load_market_dataset" => load_market_dataset_tool(params),
         "analyze_portfolio_risk" => with_dataset(params, |panel, p| {
             trustquant_core::portfolio::analyze_portfolio_risk_tool(panel, p)
@@ -476,6 +478,8 @@ pub fn get_manifest(calculation_id: &str) -> Result<Value, ErrorEnvelope> {
 pub fn known_tools() -> &'static [&'static str] {
     &[
         "price_european_option",
+        "bootstrap_yield_curve",
+        "price_vanilla_swap",
         "load_market_dataset",
         "optimize_portfolio",
         "analyze_portfolio_risk",
@@ -504,6 +508,35 @@ pub fn tool_descriptors() -> Value {
                     "valuation_date": {"type": "string", "description": "ISO YYYY-MM-DD, years 1901-2199"},
                     "maturity_date": {"type": "string", "description": "ISO YYYY-MM-DD, after valuation_date"},
                     "day_counter": {"type": "string", "enum": ["Actual360", "Actual365Fixed", "Thirty360USA", "Thirty360European", "ActualActualISDA", "ActualActualISMA"], "description": "default Actual365Fixed"}
+                }
+            }
+        },
+        {
+            "name": "bootstrap_yield_curve",
+            "description": "Bootstrap a single-curve EUR yield curve (6M deposit Act/360 + 1Y-10Y annual swaps 30E/360 vs 6M float, spot T+2 TARGET, log-linear discounts). Returns pillar dates, discount factors and helper repricing residuals (~0). QuantLib-pinned.",
+            "inputSchema": {
+                "type": "object",
+                "required": ["eval_date", "deposit_6m", "swap_rates_1y_10y"],
+                "properties": {
+                    "eval_date": {"type": "string", "description": "ISO YYYY-MM-DD"},
+                    "deposit_6m": {"type": "number", "description": "6M deposit rate (Act/360)"},
+                    "swap_rates_1y_10y": {"type": "array", "items": {"type": "number"}, "minItems": 10, "maxItems": 10}
+                }
+            }
+        },
+        {
+            "name": "price_vanilla_swap",
+            "description": "Price a EUR vanilla swap (1-10y payer/receiver, annual 30E/360 fixed vs 6M Act/360 float) on a curve bootstrapped from the provided quotes. NPV per unit notional, fair rate, leg NPVs, full coupon schedules. fixed_rate omitted = ATM.",
+            "inputSchema": {
+                "type": "object",
+                "required": ["eval_date", "deposit_6m", "swap_rates_1y_10y", "years"],
+                "properties": {
+                    "eval_date": {"type": "string"},
+                    "deposit_6m": {"type": "number"},
+                    "swap_rates_1y_10y": {"type": "array"},
+                    "swap_type": {"type": "string", "enum": ["payer", "receiver"]},
+                    "years": {"type": "integer", "minimum": 1, "maximum": 10},
+                    "fixed_rate": {"type": "number", "description": "annual 30E/360; omit for ATM"}
                 }
             }
         },

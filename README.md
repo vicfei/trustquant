@@ -1,7 +1,7 @@
 # TrustQuant
 
 > Open, local-first, agent-facing financial tool layer: **trusted numerical core → one tool contract → provider routing → calculation manifests and replay**.
-> Status: **M1 public preview candidate** — three end-to-end demos, every tool oracle-pinned, every calculation recorded and replayable. License: **Apache-2.0**. (中文说明：README.zh-CN.md)
+> Status: **v0.2.0 — M2 interest-rate vertical slice** — options, portfolio optimization, risk/stress AND now EUR yield-curve bootstrapping + vanilla swaps, all QuantLib-pinned; native/WASM differential restored; FinancePy independent cross-check. License: **Apache-2.0**. (中文说明：README.zh-CN.md)
 
 ## Why
 
@@ -52,9 +52,18 @@ Library (`trustquant-runtime`), CLI (`trustquant`), MCP (`trustquant mcp`) and W
 | `skills/` + `evals/` | Three official skills + 11 deterministic eval cases (incl. injection-as-data) |
 | `adr/` | ADR-0001..0006 |
 
+## M2: the rates vertical (new in v0.2.0)
+
+- `bootstrap_yield_curve` — single-curve EUR slice (6M deposit Act/360 + 1Y–10Y annual swaps, 30E/360 fixed vs 6M Act/360 float, spot T+2 TARGET, log-linear discounts). The bootstrap is exact-sequential (annual coupons on pillars + telescoping float => each pillar solves a LINEAR equation), helper repricing residuals ~1e-13. Pinned by 92 calendar/rates fixtures from QuantLib 1.33 across flat/upward/inverted scenarios.
+- `price_vanilla_swap` — 1–10y payer/receiver, NPV per unit notional, fair rate, leg NPVs and full coupon schedules (dates EXACT vs QuantLib; ATM swaps price to ~0 by construction).
+- Schema bumped to **0.2** (new enums = minor; policy is now TESTED: same-major acceptance, cross-major rejection, unknown-enum negotiation).
+- WASM differential validation restored (options + full rates chain).
+- FinancePy 1.0.1 (GPL-3.0, verified) used as a dev-time isolated black-box cross-check — day counts exact, fair rates within 3e-5; its curve node re-parameterization is documented in docs/financepy-crosscheck.json.
+
 ## Known limitations (honest list)
 
 - Replay promise is **same version, same environment**; cross-version gets parsing + diff reports only.
+- The rates slice is single-curve, single-currency (EUR/TARGET), no OIS dual-curve, no calendars beyond TARGET/WeekendsOnly/Null (each new calendar arrives fixture-pinned with its use case); extrapolation past the last pillar is clamped, not declared.
 - Optimization is a narrow slice: long-only `min_volatility`/`max_sharpe` with weight bounds; bounded solutions are verified by invariants, not analytic weights; no shorting/leverage/transaction costs; "solver succeeded" is never sold as "globally optimal".
 - `load_market_dataset` accepts `date,ticker,close` CSVs (ADR-0005 rules); missing values are rejected, not imputed.
 - serde_json's text parser shifts certain 17-digit decimals by one ulp **deterministically** (ADR-0001 §6); in-process digests and replay are unaffected.

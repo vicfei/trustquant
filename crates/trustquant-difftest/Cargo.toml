@@ -1,0 +1,11 @@
+[package]
+name = "trustquant-difftest"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+trustquant-core = { path = "../trustquant-core" }
+trustquant-fixtures = { path = "../trustquant-fixtures" }
+serde_json = { workspace = true }
+wasmi = "0.40"

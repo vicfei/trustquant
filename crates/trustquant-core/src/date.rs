@@ -191,6 +191,19 @@ pub fn add_months(d: Date, n: u32) -> Result<Date, String> {
     Date::from_ymd(ny, nm, nd)
 }
 
+/// Add (possibly negative) whole months with end-of-month clamping.
+pub fn add_months_signed(d: Date, n: i32) -> Result<Date, String> {
+    if n == 0 {
+        return Ok(d);
+    }
+    let (y, m, day) = d.ymd();
+    let total = (y as i64) * 12 + (m as i64 - 1) + n as i64;
+    let ny = total.div_euclid(12) as i32;
+    let nm = (total.rem_euclid(12) + 1) as u32;
+    let nd = day.min(days_in_month(ny, nm));
+    Date::from_ymd(ny, nm, nd)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

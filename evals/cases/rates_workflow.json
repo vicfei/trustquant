@@ -1,0 +1,57 @@
+{
+  "id": "rates_workflow",
+  "category": "multi_step_workflow",
+  "steps": [
+    {
+      "tool": "bootstrap_yield_curve",
+      "note": "bootstrap the upward curve",
+      "params": {
+        "eval_date": "2023-06-21",
+        "deposit_6m": 0.025,
+        "swap_rates_1y_10y": [0.027, 0.028, 0.029, 0.03, 0.031, 0.032, 0.033, 0.034, 0.035, 0.036]
+      },
+      "expect": {
+        "status": "success",
+        "result_path_eq": "result.helper_residuals_max",
+        "capture_residuals": true
+      }
+    },
+    {
+      "tool": "price_vanilla_swap",
+      "note": "price a 5Y ATM payer on the same quotes",
+      "params": {
+        "eval_date": "2023-06-21",
+        "deposit_6m": 0.025,
+        "swap_rates_1y_10y": [0.027, 0.028, 0.029, 0.03, 0.031, 0.032, 0.033, 0.034, 0.035, 0.036],
+        "swap_type": "payer",
+        "years": 5
+      },
+      "expect": {
+        "status": "success",
+        "result_path_eq": "result.fair_rate",
+        "atm_npv_zero": true
+      }
+    },
+    {
+      "tool": "price_vanilla_swap",
+      "note": "out-of-range tenor is rejected, not guessed",
+      "params": {
+        "eval_date": "2023-06-21",
+        "deposit_6m": 0.025,
+        "swap_rates_1y_10y": [0.027, 0.028, 0.029, 0.03, 0.031, 0.032, 0.033, 0.034, 0.035, 0.036],
+        "years": 30
+      },
+      "expect": { "status": "error", "error_type": "unsupported_feature" }
+    },
+    {
+      "tool": "bootstrap_yield_curve",
+      "note": "bad quotes are market-data errors",
+      "params": {
+        "eval_date": "2023-06-21",
+        "deposit_6m": 0.9,
+        "swap_rates_1y_10y": [0.027, 0.028, 0.029, 0.03, 0.031, 0.032, 0.033, 0.034, 0.035, 0.036]
+      },
+      "expect": { "status": "error", "error_type": "invalid_market_data" }
+    }
+  ]
+}

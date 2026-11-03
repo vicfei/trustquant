@@ -240,6 +240,20 @@ fn run_step(
             return Err(format!("call-put = {parity} < 0 violates parity bound"));
         }
     }
+    if expect["capture_residuals"].as_bool() == Some(true) {
+        let r = envelope["result"]["helper_residuals_max"]
+            .as_f64()
+            .ok_or("helper_residuals_max missing")?;
+        if !(0.0..=1e-9).contains(&r) {
+            return Err(format!("helper residuals {r} exceed 1e-9"));
+        }
+    }
+    if expect["atm_npv_zero"].as_bool() == Some(true) {
+        let npv = envelope["result"]["npv"].as_f64().ok_or("npv missing")?;
+        if npv.abs() > 1e-9 {
+            return Err(format!("ATM swap npv {npv} should be ~0"));
+        }
+    }
     if expect["reproducible_digest"].as_bool() == Some(true) {
         let again = mcp_call(tool, step, captured_id, captured_dataset)?;
         let d1 =

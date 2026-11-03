@@ -8,8 +8,15 @@ fmt:
 clippy:
 	cargo clippy --workspace --all-targets -- -D warnings
 
-test: fmt clippy
+wasm:
+	cargo build -p trustquant-wasm --target wasm32-unknown-unknown --release
+
+test: fmt clippy wasm
 	cargo test --workspace
+
+# Manual, dev-time only (GPL oracle in .venv-fp; see docs/financepy-crosscheck.json)
+crosscheck:
+	.venv-fp/bin/python fixture-generator/financepy_oracle.py
 
 demo:
 	cargo build -p trustquant-cli

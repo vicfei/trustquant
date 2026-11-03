@@ -13,6 +13,13 @@
 | `analyze_portfolio_risk` | ✅ 手算微样本 + 合成数据全量 oracle | ✅ 年化/复利口径显式 | ✅ simple 收益、252、ddof=1 逐指标 units | ✅ invalid_input/invalid_market_data | ✅ skill trace | ✅ manifest + 重放 | ✅ | **M1 交付** |
 | `stress_test_portfolio` | ✅ 可手算持仓冲击 oracle（3 情景） | ✅ 贡献之和=组合收益（逐情景断言） | ✅ 单位名义基准口径 | ✅ invalid_input（非法冲击） | ✅ skill trace | ✅ manifest + 重放 | ✅ | **M1 交付** |
 
+| `bootstrap_yield_curve` | ✅ QuantLib 80 日历 fixtures + 12 曲线/互换 fixtures（3 场景：平/向上/倒挂；DF、连续零息 Act/365F、helper 残差 ~1e-13） | ✅ 存款解析式核对 | ✅ 逐指标 units（DF/连续零息口径显式） | ✅ invalid_market_data（报价域）/no_convergence（非正 DF）/invalid_input | ✅ rates_workflow eval | ✅ manifest+同环境重放 | ✅ | **M2 交付** |
+| `price_vanilla_swap` | ✅ 9 互换案例（payer/receiver×期限×off/ATM；NPV/公平/双腿/固定腿逐票精确日期与年化） | ✅ 望远镜浮腿=DF差；ATM NPV=0 eval 断言 | ✅ 单位名义 NPV + 年化 30E/360 公平利率口径 | ✅ unsupported_feature（>10y）/invalid_input | ✅ rates_workflow（含 30y 拒绝与坏报价） | ✅ | ✅ | **M2 交付** |
+| 原生/WASM 差分 | ✅ 利率链路（曲线 DF、互换 NPV/公平/日程）+ 期权 + 错误信封双侧一致（浮点按容差，ADR-0003） | — | — | — | — | — | ✅ | **M2 交付** |
+| Provider 一致性 | —（工程） | — | — | ✅ stub provider 走同一协议通道，结构化拒绝保留语义 | — | — | ✅ ADR-0002 | **M2 交付** |
+| Schema 政策 | — | — | — | ✅ 同 major 任意 minor 接受 / 异 major 显式拒绝 / 未知枚举=协商不崩溃（测试固定） | — | — | ✅ schema 0.2 | **M2 交付** |
+| FinancePy 佐证 | ✅ 独立复算（GPL 隔离 oracle，手动 make crosscheck） | ✅ 日计数精确一致；公平利率 3e-5 内 | — | — | — | — | ✅ docs/financepy-crosscheck.json | **M2 交付（佐证级）** |
+
 ## M0 证据索引（对应 ADR-0006 十条门禁）
 
 | 门禁 | 证据 |

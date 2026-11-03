@@ -15,6 +15,8 @@
 - ADR-0001/0002/0003/0004/0005/0006：v1 ADR-0002/0003 的契约决策重新验收后收录于 ADR-0001，其余为 v2 新决策；
 - `date.rs`/`daycount.rs`/`canonical.rs`/fixtures 比较器：v1 已验证实现回收，随新测试重跑通过即验收。
 
+| v2 M2 利率垂直切片（TrustQuant） | （待验收后打 v0.2.0） | 2026-11-03 | 0.2.0 | rustc 1.99.1 | 同上（新增 calendar 80 + rates 12 fixtures） | 同上（另 FinancePy 1.0.1 GPL 隔离 oracle，仅手动） | 同上 | 新增：TARGET/WeekendsOnly/Null 日历+四约定+Forward Schedule；bootstrap_yield_curve（线性逐支柱，残差 ~1e-13）；price_vanilla_swap（NPV/公平/双腿/全票期日程）；WASM 差分恢复；stub provider 通道泛化；schema 0.2（政策测试化）；FinancePy 独立佐证（日计数精确、公平利率 3e-5，其曲线重参数化已记录）；57 测试全绿 |
+
 ## 更名与许可证记录
 
 - 2026-11-03：占位名 `finstrument` → 正式定名 **`trustquant`**（M1 公开前完成，GitHub 仓库同步更名，旧地址自动重定向）；crate/binary/环境变量（`TRUSTQUANT_DATA_DIR`、`TRUSTQUANT_PROVIDER_PYTHON`）同步更名。
