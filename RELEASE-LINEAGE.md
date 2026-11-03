@@ -15,7 +15,7 @@
 - ADR-0001/0002/0003/0004/0005/0006：v1 ADR-0002/0003 的契约决策重新验收后收录于 ADR-0001，其余为 v2 新决策；
 - `date.rs`/`daycount.rs`/`canonical.rs`/fixtures 比较器：v1 已验证实现回收，随新测试重跑通过即验收。
 
-| v2 M2 利率垂直切片（TrustQuant） | （待验收后打 v0.2.0） | 2026-11-03 | 0.2.0 | rustc 1.99.1 | 同上（新增 calendar 80 + rates 12 fixtures） | 同上（另 FinancePy 1.0.1 GPL 隔离 oracle，仅手动） | 同上 | 新增：TARGET/WeekendsOnly/Null 日历+四约定+Forward Schedule；bootstrap_yield_curve（线性逐支柱，残差 ~1e-13）；price_vanilla_swap（NPV/公平/双腿/全票期日程）；WASM 差分恢复；stub provider 通道泛化；schema 0.2（政策测试化）；FinancePy 独立佐证（日计数精确、公平利率 3e-5，其曲线重参数化已记录）；57 测试全绿 |
+| v2 M2 利率垂直切片（TrustQuant） | （待验收后打 v0.2.0） | 2026-11-03 | 0.2.0 | rustc 1.99.1 | 同上（新增 calendar 80 + rates 12 fixtures） | 同上（另 自研 rates_oracle 第二 oracle 入 CI——按"许可证受阻→自研"原则于同日替换 GPL FinancePy 手动对照） | 同上 | 新增：TARGET/WeekendsOnly/Null 日历+四约定+Forward Schedule；bootstrap_yield_curve（线性逐支柱，残差 ~1e-13）；price_vanilla_swap（NPV/公平/双腿/全票期日程）；WASM 差分恢复；stub provider 通道泛化；schema 0.2（政策测试化）；自研第二 oracle 佐证（二分法 bootstrap + 现金流加总，DF 1e-11 / 望远镜 gap ~1e-16，CI 自动；曾用 GPL FinancePy 核实口径后替换）；57 测试全绿 |
 
 ## 更名与许可证记录
 

@@ -18,7 +18,7 @@
 | 原生/WASM 差分 | ✅ 利率链路（曲线 DF、互换 NPV/公平/日程）+ 期权 + 错误信封双侧一致（浮点按容差，ADR-0003） | — | — | — | — | — | ✅ | **M2 交付** |
 | Provider 一致性 | —（工程） | — | — | ✅ stub provider 走同一协议通道，结构化拒绝保留语义 | — | — | ✅ ADR-0002 | **M2 交付** |
 | Schema 政策 | — | — | — | ✅ 同 major 任意 minor 接受 / 异 major 显式拒绝 / 未知枚举=协商不崩溃（测试固定） | — | — | ✅ schema 0.2 | **M2 交付** |
-| FinancePy 佐证 | ✅ 独立复算（GPL 隔离 oracle，手动 make crosscheck） | ✅ 日计数精确一致；公平利率 3e-5 内 | — | — | — | — | ✅ docs/financepy-crosscheck.json | **M2 交付（佐证级）** |
+| 第二 oracle（利率域，自研） | ✅ rates_oracle（纯标准库）：二分法 bootstrap + 现金流加总定价，DF 1e-11、望远镜 gap ~1e-16，**CI 自动** | ✅ 方法独立性（数值解 vs 闭式、加总 vs 恒等式） | — | — | — | — | ✅ fixtures/rates_oracle/ + provider-status | **M2 交付（已替换 GPL FinancePy 手动对照）** |
 
 ## M0 证据索引（对应 ADR-0006 十条门禁）
 

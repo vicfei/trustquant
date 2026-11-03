@@ -14,9 +14,6 @@ wasm:
 test: fmt clippy wasm
 	cargo test --workspace
 
-# Manual, dev-time only (GPL oracle in .venv-fp; see docs/financepy-crosscheck.json)
-crosscheck:
-	.venv-fp/bin/python fixture-generator/financepy_oracle.py
 
 demo:
 	cargo build -p trustquant-cli
@@ -32,6 +29,7 @@ provider:
 regen:
 	$(MAKE) -C fixture-generator regen
 	python3 fixture-generator/portfolio_oracle.py fixtures/
+	python3 fixture-generator/rates_oracle.py fixtures/
 	python3 data/gen_synthetic_prices.py
 
 clean:

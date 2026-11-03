@@ -1,0 +1,7 @@
+{
+ "adr": "ADR-0003",
+ "family": "rates_oracle",
+ "generated_by": "rates_oracle.py (pure stdlib)",
+ "note": "In-house independent second oracle (Apache-2.0; replaces the GPL FinancePy manual cross-check per project policy). Method independence: bisection bootstrap (vs closed-form linear solve in Rust), full float-cashflow summation (vs telescoping), independently coded day counts. Schedule dates are consumed from the QuantLib `rates` fixtures (primary oracle's domain).",
+ "schema": 1
+}

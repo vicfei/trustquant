@@ -1,7 +1,7 @@
 # TrustQuant
 
 > Open, local-first, agent-facing financial tool layer: **trusted numerical core → one tool contract → provider routing → calculation manifests and replay**.
-> Status: **v0.2.0 — M2 interest-rate vertical slice** — options, portfolio optimization, risk/stress AND now EUR yield-curve bootstrapping + vanilla swaps, all QuantLib-pinned; native/WASM differential restored; FinancePy independent cross-check. License: **Apache-2.0**. (中文说明：README.zh-CN.md)
+> Status: **v0.2.0 — M2 interest-rate vertical slice** — options, portfolio optimization, risk/stress AND now EUR yield-curve bootstrapping + vanilla swaps, all QuantLib-pinned; native/WASM differential restored; in-house second-oracle cross-check. License: **Apache-2.0**. (中文说明：README.zh-CN.md)
 
 ## Why
 
@@ -58,7 +58,7 @@ Library (`trustquant-runtime`), CLI (`trustquant`), MCP (`trustquant mcp`) and W
 - `price_vanilla_swap` — 1–10y payer/receiver, NPV per unit notional, fair rate, leg NPVs and full coupon schedules (dates EXACT vs QuantLib; ATM swaps price to ~0 by construction).
 - Schema bumped to **0.2** (new enums = minor; policy is now TESTED: same-major acceptance, cross-major rejection, unknown-enum negotiation).
 - WASM differential validation restored (options + full rates chain).
-- FinancePy 1.0.1 (GPL-3.0, verified) used as a dev-time isolated black-box cross-check — day counts exact, fair rates within 3e-5; its curve node re-parameterization is documented in docs/financepy-crosscheck.json.
+- Second oracle, in-house (project policy: license friction -> reimplement, ideas not code): `rates_oracle.py` re-derives the same curve and swaps with per-pillar bisection (vs the closed-form solve) and full float-cashflow summation (vs telescoping) — DF agreement 1e-11, telescoping gap ~1e-16, in CI. It replaced a brief GPL-FinancePy manual cross-check whose findings (exact day counts, 3e-5 fair rates) it reproduces.
 
 ## Known limitations (honest list)
 

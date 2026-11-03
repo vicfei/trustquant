@@ -11,9 +11,9 @@
 |---|---|---|---|
 | QuantLib 1.33 C++ | BSD-3-Clause | 主 oracle（1e-9）：期权/日计数/日历/曲线/互换 | fixture 生成（CI 周期漂移检查） |
 | 纯标准库 Python（自研） | Apache-2.0（本项目） | 组合域独立 oracle：风险/压力/优化解析基准 | 随 fixture 生成 |
-| FinancePy 1.0.1 | **GPL-3.0**（已核实） | 独立佐证（1e-4）：日计数精确一致、公平利率/贴现独立复算 | **手动**（`make crosscheck`，.venv-fp 隔离，零代码复制，不进 CI/发行包） |
+| rates_oracle（自研纯标准库） | Apache-2.0（本项目） | 利率域第二 oracle（CI 自动）：**逐支柱二分法** bootstrap（对照 Rust 闭式线性解）+ **逐笔现金流加总**浮腿定价（对照望远镜恒等式），DF 一致 1e-11、望远镜 gap ~1e-16 | 随 fixture 生成（fixtures/rates_oracle/），测试自动消费 |
 
-发现记录：FinancePy 的 DiscountCurve 将节点 DF 重参数化为零息利率再内插，节点仅能复现到 ~2.6e-4（见 docs/financepy-crosscheck.json）——公平利率对照采用与其自身精度一致的 1e-4 门槛。
+历史记录：FinancePy 1.0.1（GPL-3.0，已核实）曾作手动隔离佐证——日计数精确一致、公平利率 3e-5，且发现其 DiscountCurve 节点重参数化 ~2.6e-4。按项目原则（许可证受阻→借鉴思路自研，2026-11-03）由 rates_oracle 替代，方法学独立性保持且进入 CI。
 
 ## python-sidecar 锁定环境（ADR-0002）
 
