@@ -1,0 +1,39 @@
+{
+ "model": "deepseek-flash",
+ "n": 80,
+ "answered": 54,
+ "no_answer": 26,
+ "no_answer_burned_budget": 26,
+ "median_reasoning_tokens": 14585,
+ "median_abs_rel": 0.0009295526467816944,
+ "mean_abs_rel": 0.0010358522133233283,
+ "p90_abs_rel": 0.002291086051516405,
+ "max_abs_rel": 0.0043915862018265315,
+ "buckets": {
+  "<1%": 54,
+  "1\u20135%": 0,
+  "5\u201310%": 0,
+  "10\u201325%": 0,
+  "\u226525%": 0,
+  "no-answer": 26
+ },
+ "by_moneyness": {
+  "OTM (K<S)": {
+   "n": 19,
+   "median_abs_rel": 0.0009295526467816944,
+   "p90_abs_rel": 0.003415622990588162
+  },
+  "ATM (0.98\u20131.02)": {
+   "n": 10,
+   "median_abs_rel": 0.001156988889164274,
+   "p90_abs_rel": 0.002743616366865995
+  },
+  "ITM (K>S)": {
+   "n": 25,
+   "median_abs_rel": 0.0007315846127030072,
+   "p90_abs_rel": 0.002008314736929506
+  }
+ },
+ "within_5pct": 54,
+ "off_by_25pct_or_more": 0
+}

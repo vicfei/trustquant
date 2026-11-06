@@ -4,3 +4,5 @@
 /.venv
 /.wheels
 /crosscheck/.run
+essays/llm-numbers-vs-oracle/.tqdata/
+essays/llm-numbers-vs-oracle/.req_*.json
