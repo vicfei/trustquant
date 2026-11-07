@@ -3,6 +3,9 @@
 > Open, local-first, agent-facing financial tool layer: **trusted numerical core → one tool contract → provider routing → calculation manifests and replay**.
 > Status: **v0.2.0 — M2 interest-rate vertical slice** — options, portfolio optimization, risk/stress AND now EUR yield-curve bootstrapping + vanilla swaps, all QuantLib-pinned; native/WASM differential restored; in-house second-oracle cross-check. License: **Apache-2.0**. (中文说明：README.zh-CN.md)
 
+[![CI](https://github.com/vicfei/trustquant/actions/workflows/ci.yml/badge.svg)](https://github.com/vicfei/trustquant/actions/workflows/ci.yml)
+[![verification: open entry](https://img.shields.io/badge/verification-open_entry-2e7d32)](docs/verify.md)
+
 ## Why
 
 A general agent shouldn't need to know QuantLib, PyPortfolioOpt or day-count conventions to price an option, optimize a portfolio or run a stress test — but it MUST get unit-correct, verifiable, replayable answers, and honest refusals when something is out of scope. TrustQuant is that layer:
@@ -11,6 +14,20 @@ A general agent shouldn't need to know QuantLib, PyPortfolioOpt or day-count con
 - **Honest states, never silent fallbacks**: american options → `unsupported_feature` with no fabricated number; missing provider → `provider_unavailable` with an install hint; missing dataset/manifest → `artifact_unavailable` / `replay_unavailable`.
 - **Everything is recorded**: every call gets a `calculation_id`; datasets are content-addressed; manifests record who computed, with which versions, on which inputs; replay (same version, same environment) verifies digests and reports diffs.
 - **Units are machine-readable**: per-metric unit semantics (Vega per 1.00 vol, Theta per year, daily simple returns, 252-day year) travel with every result.
+
+## The niche, and the nearest neighbors
+
+"Trusted compute under agent workflows" is a real but sparsely populated niche. Nearest projects as of 2026-11-07 (respectful, factual — different tradeoffs, not bad projects):
+
+| Project | ★ | Model | Their verification story | Where TrustQuant differs |
+|---|---:|---|---|---|
+| [quantoracle](https://github.com/QuantOracledev/quantoracle) | 14 | hosted API + MCP + CLI; free tier, then pay-per-call (x402) | 63 deterministic calculators, "citation-verified" against textbook values, 120 benchmarks | **local-first** (offline, no keys, no metering); verification is a version-pinned **oracle lineage** (QuantLib 1.33 golden fixtures + an independent in-house oracle in CI), not citations; per-calculation manifest + replay |
+| [tradingcalc-mcp](https://github.com/SKalinin909/tradingcalc-mcp) | 4 | remote streamable-HTTP MCP, free | 100 tools; every response ECDSA-signed (offline-checkable) + public test-vector page | a signature proves *"this server said X"*; **replay proves *"anyone re-computes X"*** — the trust anchor is the math, not a key; local-first; deep fixture-pinned domains with unit semantics vs breadth |
+| [rateslib](https://github.com/attack68/rateslib) | 370 | Python library (not agent-facing) | the credibility benchmark for fixed-income numerics | same credibility-first road in our rates slice (bootstrap pinned to QuantLib at 1e-10); rateslib is a library to build on, not an agent tool layer |
+
+Above this layer sit the agent frameworks — TradingAgents (★121k), ai-hedge-fund (★64k), Vibe-Trading (★38k) — none of which pins its numbers to an oracle; that gap is why TrustQuant exists (measured, not asserted: [raw-LLM vs oracle experiment](essays/llm-numbers-vs-oracle/README.md)). Data MCP servers (akshare, yahoo-finance-mcp, …) are a different lane: data supply, not verified computation.
+
+Every claim on this page is checkable — start at the [verification entry](docs/verify.md).
 
 ## Quickstart (no credentials, no cloud)
 
