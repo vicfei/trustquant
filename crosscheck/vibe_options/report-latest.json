@@ -1,0 +1,1550 @@
+{
+ "verdict": "PASS",
+ "cases": 55,
+ "tolerance": 1e-05,
+ "conventions": "see CONVENTIONS.md",
+ "vibe_version": "0.1.19",
+ "trustquant": "0.2.0 (QuantLib 1.33-pinned)",
+ "rows": [
+  {
+   "case": {
+    "option_type": "call",
+    "spot": 100,
+    "strike": 100,
+    "vol": 0.05,
+    "rate": 0.0,
+    "days": 30,
+    "maturity": "2023-07-21"
+   },
+   "vibe": {
+    "price": 0.571861,
+    "delta": 0.502859,
+    "gamma": 0.278301,
+    "vega": 0.11437,
+    "theta": -0.009531
+   },
+   "trustquant": {
+    "npv": 0.5718610890851252,
+    "delta": 0.5028593054454257,
+    "gamma": 0.27830096454499353,
+    "vega": 11.437025940205217,
+    "theta": -3.4787620568124202,
+    "t": 0.0821917808219178
+   },
+   "calculation_id": "82e669d1-a891-467d-b4cb-bdb731c106dc",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "call",
+    "spot": 100,
+    "strike": 100,
+    "vol": 0.05,
+    "rate": -0.005,
+    "days": 365,
+    "maturity": "2024-06-20"
+   },
+   "vibe": {
+    "price": 1.758863,
+    "delta": 0.470107,
+    "gamma": 0.079564,
+    "vega": 0.397822,
+    "theta": -0.002105
+   },
+   "trustquant": {
+    "npv": 1.7588634236988128,
+    "delta": 0.47010735594710523,
+    "gamma": 0.07956436632149944,
+    "vega": 39.78218316074972,
+    "theta": -0.7682952181636844,
+    "t": 1.0
+   },
+   "calculation_id": "667f5047-bc89-4d86-b9c0-2b0b0205e1bb",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "call",
+    "spot": 100,
+    "strike": 100,
+    "vol": 0.2,
+    "rate": 0.05,
+    "days": 366,
+    "maturity": "2024-06-21"
+   },
+   "vibe": {
+    "price": 10.468148,
+    "delta": 0.63701,
+    "gamma": 0.018733,
+    "vega": 0.375691,
+    "theta": -0.017557
+   },
+   "trustquant": {
+    "npv": 10.468148385179155,
+    "delta": 0.6370104227930844,
+    "gamma": 0.01873322479015403,
+    "vega": 37.5690973873774,
+    "theta": -6.40828965273727,
+    "t": 1.0027397260273974
+   },
+   "calculation_id": "71982d90-522c-4d8b-8b59-9701347a5661",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "call",
+    "spot": 100,
+    "strike": 100,
+    "vol": 0.5,
+    "rate": 0.0,
+    "days": 730,
+    "maturity": "2025-06-20"
+   },
+   "vibe": {
+    "price": 27.632639,
+    "delta": 0.638163,
+    "gamma": 0.0053,
+    "vega": 0.530007,
+    "theta": -0.018151
+   },
+   "trustquant": {
+    "npv": 27.632639016823695,
+    "delta": 0.6381631950841185,
+    "gamma": 0.005300070646880572,
+    "vega": 53.000706468805724,
+    "theta": -6.625088308600715,
+    "t": 2.0
+   },
+   "calculation_id": "8a0bfbe1-e585-406f-bdc6-e59234ae1197",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "call",
+    "spot": 100,
+    "strike": 100,
+    "vol": 0.5,
+    "rate": -0.005,
+    "days": 1825,
+    "maturity": "2028-06-19"
+   },
+   "vibe": {
+    "price": 41.66538,
+    "delta": 0.704247,
+    "gamma": 0.00309,
+    "vega": 0.772426,
+    "theta": -0.010187
+   },
+   "trustquant": {
+    "npv": 41.66537976555274,
+    "delta": 0.7042474815025417,
+    "gamma": 0.0030897024263872854,
+    "vega": 77.24256065968214,
+    "theta": -3.7183311910606,
+    "t": 5.0
+   },
+   "calculation_id": "0d624eee-e840-4245-b180-62a4a213decd",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "call",
+    "spot": 100,
+    "strike": 100,
+    "vol": 0.9,
+    "rate": -0.005,
+    "days": 30,
+    "maturity": "2023-07-21"
+   },
+   "vibe": {
+    "price": 10.246675,
+    "delta": 0.550695,
+    "gamma": 0.015337,
+    "vega": 0.113449,
+    "theta": -0.169559
+   },
+   "trustquant": {
+    "npv": 10.246675233408382,
+    "delta": 0.5506953184770887,
+    "gamma": 0.01533655745710996,
+    "vega": 11.344850721697778,
+    "theta": -61.88894341822384,
+    "t": 0.0821917808219178
+   },
+   "calculation_id": "f00feea0-b404-4ab5-a700-5fb26f70dcd1",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "call",
+    "spot": 100,
+    "strike": 105,
+    "vol": 0.05,
+    "rate": 0.05,
+    "days": 365,
+    "maturity": "2024-06-20"
+   },
+   "vibe": {
+    "price": 2.054336,
+    "delta": 0.519619,
+    "gamma": 0.079692,
+    "vega": 0.39846,
+    "theta": -0.009566
+   },
+   "trustquant": {
+    "npv": 2.054336440320924,
+    "delta": 0.5196187360676711,
+    "gamma": 0.0796919578058161,
+    "vega": 39.84597890290805,
+    "theta": -3.4915263308950104,
+    "t": 1.0
+   },
+   "calculation_id": "eea83645-c96e-4415-8c14-3788eb5da437",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "call",
+    "spot": 100,
+    "strike": 105,
+    "vol": 0.2,
+    "rate": 0.0,
+    "days": 366,
+    "maturity": "2024-06-21"
+   },
+   "vibe": {
+    "price": 5.916404,
+    "delta": 0.442955,
+    "gamma": 0.019716,
+    "vega": 0.395397,
+    "theta": -0.010803
+   },
+   "trustquant": {
+    "npv": 5.91640370435961,
+    "delta": 0.4429553813276256,
+    "gamma": 0.019715855600150822,
+    "vega": 39.539743285781924,
+    "theta": -3.943171120030165,
+    "t": 1.0027397260273974
+   },
+   "calculation_id": "4103ee7f-0e5f-4273-81f2-56dcbbee8442",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "call",
+    "spot": 100,
+    "strike": 105,
+    "vol": 0.2,
+    "rate": -0.005,
+    "days": 730,
+    "maturity": "2025-06-20"
+   },
+   "vibe": {
+    "price": 8.806805,
+    "delta": 0.473516,
+    "gamma": 0.014074,
+    "vega": 0.562946,
+    "theta": -0.007184
+   },
+   "trustquant": {
+    "npv": 8.806804894285278,
+    "delta": 0.4735164445125335,
+    "gamma": 0.01407364912850117,
+    "vega": 56.294596514004695,
+    "theta": -2.6220056279153945,
+    "t": 2.0
+   },
+   "calculation_id": "b2b9266d-a491-4b97-8885-5fcea24a8439",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "call",
+    "spot": 100,
+    "strike": 105,
+    "vol": 0.5,
+    "rate": 0.05,
+    "days": 1825,
+    "maturity": "2028-06-19"
+   },
+   "vibe": {
+    "price": 48.19308,
+    "delta": 0.770042,
+    "gamma": 0.002716,
+    "vega": 0.678909,
+    "theta": -0.013247
+   },
+   "trustquant": {
+    "npv": 48.193080446112106,
+    "delta": 0.7700418082264185,
+    "gamma": 0.0027156347152510287,
+    "vega": 67.89086788127572,
+    "theta": -4.835098412890273,
+    "t": 5.0
+   },
+   "calculation_id": "5a79b5f6-d6a3-47f8-8c53-c6f4832d4539",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "call",
+    "spot": 100,
+    "strike": 105,
+    "vol": 0.9,
+    "rate": 0.05,
+    "days": 30,
+    "maturity": "2023-07-21"
+   },
+   "vibe": {
+    "price": 8.37107,
+    "delta": 0.482391,
+    "gamma": 0.015446,
+    "vega": 0.114262,
+    "theta": -0.176854
+   },
+   "trustquant": {
+    "npv": 8.371070251058882,
+    "delta": 0.48239051343596473,
+    "gamma": 0.015446496889493073,
+    "vega": 11.42617578126885,
+    "theta": -64.55171145707384,
+    "t": 0.0821917808219178
+   },
+   "calculation_id": "3453a801-c396-43a1-b425-e96305387d2c",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "call",
+    "spot": 100,
+    "strike": 95,
+    "vol": 0.05,
+    "rate": 0.0,
+    "days": 365,
+    "maturity": "2024-06-20"
+   },
+   "vibe": {
+    "price": 5.386344,
+    "delta": 0.85334,
+    "gamma": 0.045935,
+    "vega": 0.229673,
+    "theta": -0.001573
+   },
+   "trustquant": {
+    "npv": 5.386343916654042,
+    "delta": 0.8533399052691382,
+    "gamma": 0.04593462896615593,
+    "vega": 22.967314483077967,
+    "theta": -0.5741828620769492,
+    "t": 1.0
+   },
+   "calculation_id": "98884fb6-5fbf-4c38-9fd1-80e16efaa0c2",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "call",
+    "spot": 100,
+    "strike": 95,
+    "vol": 0.05,
+    "rate": -0.005,
+    "days": 366,
+    "maturity": "2024-06-21"
+   },
+   "vibe": {
+    "price": 4.992229,
+    "delta": 0.828781,
+    "gamma": 0.050773,
+    "vega": 0.254561,
+    "theta": -0.000672
+   },
+   "trustquant": {
+    "npv": 4.992229324057789,
+    "delta": 0.8287814307472618,
+    "gamma": 0.05077316036782208,
+    "vega": 25.45613245838751,
+    "theta": -0.24523493584443412,
+    "t": 1.0027397260273974
+   },
+   "calculation_id": "c172c9b0-f57e-4d04-b05d-60b0bb840f93",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "call",
+    "spot": 100,
+    "strike": 95,
+    "vol": 0.2,
+    "rate": 0.05,
+    "days": 730,
+    "maturity": "2025-06-20"
+   },
+   "vibe": {
+    "price": 18.925117,
+    "delta": 0.750582,
+    "gamma": 0.011221,
+    "vega": 0.448848,
+    "theta": -0.013838
+   },
+   "trustquant": {
+    "npv": 18.925117397726602,
+    "delta": 0.7505824981115073,
+    "gamma": 0.0112211888653319,
+    "vega": 44.884755461327615,
+    "theta": -5.050894393737586,
+    "t": 2.0
+   },
+   "calculation_id": "5cae4668-4bb7-4de5-9dca-4fb8fdb67408",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "call",
+    "spot": 100,
+    "strike": 95,
+    "vol": 0.5,
+    "rate": 0.0,
+    "days": 1825,
+    "maturity": "2028-06-19"
+   },
+   "vibe": {
+    "price": 43.864492,
+    "delta": 0.727376,
+    "gamma": 0.002972,
+    "vega": 0.742919,
+    "theta": -0.010177
+   },
+   "trustquant": {
+    "npv": 43.864491960748275,
+    "delta": 0.7273756542792955,
+    "gamma": 0.002971674908511937,
+    "vega": 74.29187271279842,
+    "theta": -3.714593635639921,
+    "t": 5.0
+   },
+   "calculation_id": "707f5e3a-40a9-4e99-81ae-5cb8a6d3adb9",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "call",
+    "spot": 100,
+    "strike": 95,
+    "vol": 0.9,
+    "rate": 0.0,
+    "days": 30,
+    "maturity": "2023-07-21"
+   },
+   "vibe": {
+    "price": 12.704447,
+    "delta": 0.628471,
+    "gamma": 0.014653,
+    "vega": 0.10839,
+    "theta": -0.162585
+   },
+   "trustquant": {
+    "npv": 12.704446902381534,
+    "delta": 0.6284705496788967,
+    "gamma": 0.014652762923099371,
+    "vega": 10.839030107498164,
+    "theta": -59.343689838552464,
+    "t": 0.0821917808219178
+   },
+   "calculation_id": "13a685e0-4dbd-4844-9e11-2c0b9b6c5160",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "call",
+    "spot": 100,
+    "strike": 95,
+    "vol": 0.9,
+    "rate": -0.005,
+    "days": 365,
+    "maturity": "2024-06-20"
+   },
+   "vibe": {
+    "price": 36.24726,
+    "delta": 0.691968,
+    "gamma": 0.003909,
+    "vega": 0.351812,
+    "theta": -0.042923
+   },
+   "trustquant": {
+    "npv": 36.24725973109383,
+    "delta": 0.6919681950731553,
+    "gamma": 0.003909023294890514,
+    "vega": 35.18120965401463,
+    "theta": -15.666796545425475,
+    "t": 1.0
+   },
+   "calculation_id": "381658fb-a841-4e95-a9c7-63d6c4636e93",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "call",
+    "spot": 80,
+    "strike": 100,
+    "vol": 0.05,
+    "rate": 0.05,
+    "days": 366,
+    "maturity": "2024-06-21"
+   },
+   "vibe": {
+    "price": 0.000305,
+    "delta": 0.000301,
+    "gamma": 0.000277,
+    "vega": 0.00089,
+    "theta": -9e-06
+   },
+   "trustquant": {
+    "npv": 0.0003046307778273201,
+    "delta": 0.0003013828169090571,
+    "gamma": 0.00027732807139839384,
+    "vega": 0.0889881197867942,
+    "theta": -0.003408924299932013,
+    "t": 1.0027397260273974
+   },
+   "calculation_id": "fd967173-61d2-4e56-a879-f1d61ee1a9d2",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "call",
+    "spot": 80,
+    "strike": 100,
+    "vol": 0.2,
+    "rate": 0.0,
+    "days": 730,
+    "maturity": "2025-06-20"
+   },
+   "vibe": {
+    "price": 3.082652,
+    "delta": 0.258651,
+    "gamma": 0.014297,
+    "vega": 0.365992,
+    "theta": -0.005014
+   },
+   "trustquant": {
+    "npv": 3.0826523017186105,
+    "delta": 0.25865088617433774,
+    "gamma": 0.014296570464322214,
+    "vega": 36.59922038866488,
+    "theta": -1.829961019433244,
+    "t": 2.0
+   },
+   "calculation_id": "8942a128-9ad9-4253-a2f7-7022fae227ab",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "call",
+    "spot": 80,
+    "strike": 100,
+    "vol": 0.2,
+    "rate": -0.005,
+    "days": 1825,
+    "maturity": "2028-06-19"
+   },
+   "vibe": {
+    "price": 7.251194,
+    "delta": 0.370224,
+    "gamma": 0.010555,
+    "vega": 0.675549,
+    "theta": -0.003395
+   },
+   "trustquant": {
+    "npv": 7.251194228216274,
+    "delta": 0.37022440960609415,
+    "gamma": 0.010555454999234857,
+    "vega": 67.55491199510308,
+    "theta": -1.2392644472007055,
+    "t": 5.0
+   },
+   "calculation_id": "c9bfa7ca-952a-4c95-b198-08307c93cf9b",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "call",
+    "spot": 80,
+    "strike": 100,
+    "vol": 0.5,
+    "rate": -0.005,
+    "days": 30,
+    "maturity": "2023-07-21"
+   },
+   "vibe": {
+    "price": 0.327051,
+    "delta": 0.068392,
+    "gamma": 0.011501,
+    "vega": 0.030248,
+    "theta": -0.025136
+   },
+   "trustquant": {
+    "npv": 0.32705122253007524,
+    "delta": 0.06839166852574868,
+    "gamma": 0.011500589669166167,
+    "vega": 3.0248126253149366,
+    "theta": -9.174750324035283,
+    "t": 0.0821917808219178
+   },
+   "calculation_id": "0523cb67-ba66-4f94-960e-68fcd9914833",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "call",
+    "spot": 80,
+    "strike": 100,
+    "vol": 0.9,
+    "rate": 0.05,
+    "days": 365,
+    "maturity": "2024-06-20"
+   },
+   "vibe": {
+    "price": 23.370231,
+    "delta": 0.601649,
+    "gamma": 0.00536,
+    "vega": 0.308737,
+    "theta": -0.041455
+   },
+   "trustquant": {
+    "npv": 23.370230830389442,
+    "delta": 0.6016492383796219,
+    "gamma": 0.005360016420558211,
+    "vega": 30.873694582415293,
+    "theta": -15.131247974085898,
+    "t": 1.0
+   },
+   "calculation_id": "4294b95e-279a-46d3-a079-c730623be239",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "call",
+    "spot": 120,
+    "strike": 100,
+    "vol": 0.05,
+    "rate": 0.0,
+    "days": 366,
+    "maturity": "2024-06-21"
+   },
+   "vibe": {
+    "price": 20.000181,
+    "delta": 0.999877,
+    "gamma": 8e-05,
+    "vega": 0.000578,
+    "theta": -4e-06
+   },
+   "trustquant": {
+    "npv": 20.00018103740065,
+    "delta": 0.9998770441635674,
+    "gamma": 7.999026818504432e-05,
+    "vega": 0.05775078211540515,
+    "theta": -0.001439824827330798,
+    "t": 1.0027397260273974
+   },
+   "calculation_id": "fb4b7bc9-8ad3-4c29-99b4-ce791b9e41e4",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "call",
+    "spot": 120,
+    "strike": 100,
+    "vol": 0.05,
+    "rate": -0.005,
+    "days": 730,
+    "maturity": "2025-06-20"
+   },
+   "vibe": {
+    "price": 19.013907,
+    "delta": 0.993289,
+    "gamma": 0.002213,
+    "vega": 0.031863,
+    "theta": 0.001263
+   },
+   "trustquant": {
+    "npv": 19.013906570390475,
+    "delta": 0.9932886016155754,
+    "gamma": 0.0022127277142156144,
+    "vega": 3.186327908470486,
+    "theta": 0.46107452926151193,
+    "t": 2.0
+   },
+   "calculation_id": "26f03905-5400-451c-831d-112597f50317",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "call",
+    "spot": 120,
+    "strike": 100,
+    "vol": 0.2,
+    "rate": 0.05,
+    "days": 1825,
+    "maturity": "2028-06-19"
+   },
+   "vibe": {
+    "price": 45.896529,
+    "delta": 0.883037,
+    "gamma": 0.003661,
+    "vega": 0.527127,
+    "theta": -0.011117
+   },
+   "trustquant": {
+    "npv": 45.89652923145376,
+    "delta": 0.8830371614622201,
+    "gamma": 0.0036606047267158126,
+    "vega": 52.71270806470771,
+    "theta": -4.057650668494787,
+    "t": 5.0
+   },
+   "calculation_id": "c45fdc4e-5a33-4bc4-b7e9-c43c7b697b2a",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "call",
+    "spot": 120,
+    "strike": 100,
+    "vol": 0.5,
+    "rate": 0.05,
+    "days": 30,
+    "maturity": "2023-07-21"
+   },
+   "vibe": {
+    "price": 21.12143,
+    "delta": 0.915006,
+    "gamma": 0.009046,
+    "vega": 0.053531,
+    "theta": -0.056757
+   },
+   "trustquant": {
+    "npv": 21.12142993552881,
+    "delta": 0.9150063132770081,
+    "gamma": 0.009045748317086584,
+    "vega": 5.353100373947129,
+    "theta": -20.716313353641457,
+    "t": 0.0821917808219178
+   },
+   "calculation_id": "7934796a-7eaf-4af1-a179-56af0d44c27a",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "call",
+    "spot": 120,
+    "strike": 100,
+    "vol": 0.9,
+    "rate": 0.0,
+    "days": 365,
+    "maturity": "2024-06-20"
+   },
+   "vibe": {
+    "price": 48.929215,
+    "delta": 0.742986,
+    "gamma": 0.002985,
+    "vega": 0.386916,
+    "theta": -0.047702
+   },
+   "trustquant": {
+    "npv": 48.929215163661205,
+    "delta": 0.7429862998723149,
+    "gamma": 0.002985464994656426,
+    "vega": 38.69162633074728,
+    "theta": -17.411231848836277,
+    "t": 1.0
+   },
+   "calculation_id": "836dc6a6-24a3-49af-a7d4-0d7356fb28f0",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "call",
+    "spot": 120,
+    "strike": 100,
+    "vol": 0.9,
+    "rate": -0.005,
+    "days": 366,
+    "maturity": "2024-06-21"
+   },
+   "vibe": {
+    "price": 48.775391,
+    "delta": 0.741299,
+    "gamma": 0.002992,
+    "vega": 0.388764,
+    "theta": -0.047248
+   },
+   "trustquant": {
+    "npv": 48.77539067882149,
+    "delta": 0.7412990314566613,
+    "gamma": 0.002991524144225021,
+    "vega": 38.876372506167655,
+    "theta": -17.245666343640433,
+    "t": 1.0027397260273974
+   },
+   "calculation_id": "23c3640a-5538-4e9a-ab50-68cffdd9b597",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "put",
+    "spot": 100,
+    "strike": 100,
+    "vol": 0.05,
+    "rate": 0.05,
+    "days": 730,
+    "maturity": "2025-06-20"
+   },
+   "vibe": {
+    "price": 0.238912,
+    "delta": -0.073589,
+    "gamma": 0.019731,
+    "vega": 0.197308,
+    "theta": 0.000365
+   },
+   "trustquant": {
+    "npv": 0.2389119523036234,
+    "delta": -0.07358938671581383,
+    "gamma": 0.019730787697083082,
+    "vega": 19.730787697083084,
+    "theta": 0.13325768498071178,
+    "t": 2.0
+   },
+   "calculation_id": "acc363ca-f9bb-42fe-9bfb-3fb390a6fc30",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "put",
+    "spot": 100,
+    "strike": 100,
+    "vol": 0.2,
+    "rate": 0.0,
+    "days": 1825,
+    "maturity": "2028-06-19"
+   },
+   "vibe": {
+    "price": 17.693673,
+    "delta": -0.411532,
+    "gamma": 0.0087,
+    "vega": 0.870037,
+    "theta": -0.004767
+   },
+   "trustquant": {
+    "npv": 17.693672624187855,
+    "delta": -0.4115316368790607,
+    "gamma": 0.00870036967386293,
+    "vega": 87.0036967386293,
+    "theta": -1.7400739347725858,
+    "t": 5.0
+   },
+   "calculation_id": "6169d13a-820d-43c2-85cf-21b4abe1128b",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "put",
+    "spot": 100,
+    "strike": 100,
+    "vol": 0.5,
+    "rate": 0.0,
+    "days": 30,
+    "maturity": "2023-07-21"
+   },
+   "vibe": {
+    "price": 5.713768,
+    "delta": -0.471431,
+    "gamma": 0.027759,
+    "vega": 0.11408,
+    "theta": -0.095067
+   },
+   "trustquant": {
+    "npv": 5.713767509099938,
+    "delta": -0.47143116245450034,
+    "gamma": 0.027759419753225007,
+    "vega": 11.407980720503426,
+    "theta": -34.69927469153126,
+    "t": 0.0821917808219178
+   },
+   "calculation_id": "f23a74a6-3ecd-4f56-9b45-a2aaa6950968",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "put",
+    "spot": 100,
+    "strike": 100,
+    "vol": 0.5,
+    "rate": -0.005,
+    "days": 365,
+    "maturity": "2024-06-20"
+   },
+   "vibe": {
+    "price": 20.042337,
+    "delta": -0.405165,
+    "gamma": 0.007752,
+    "vega": 0.387617,
+    "theta": -0.027379
+   },
+   "trustquant": {
+    "npv": 20.042337013618997,
+    "delta": -0.4051651283022042,
+    "gamma": 0.007752332302500283,
+    "vega": 38.76166151250142,
+    "theta": -9.993209627344552,
+    "t": 1.0
+   },
+   "calculation_id": "372d0157-82c6-47d8-869a-c49b9ee6943a",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "put",
+    "spot": 100,
+    "strike": 100,
+    "vol": 0.9,
+    "rate": 0.05,
+    "days": 366,
+    "maturity": "2024-06-21"
+   },
+   "vibe": {
+    "price": 31.527111,
+    "delta": -0.306341,
+    "gamma": 0.003894,
+    "vega": 0.351441,
+    "theta": -0.034695
+   },
+   "trustquant": {
+    "npv": 31.52711098982421,
+    "delta": -0.3063414132656277,
+    "gamma": 0.003894229169920479,
+    "vega": 35.14408461840564,
+    "theta": -12.663565522358596,
+    "t": 1.0027397260273974
+   },
+   "calculation_id": "8700cba8-6c07-4d51-aa2b-d5081268288e",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "put",
+    "spot": 100,
+    "strike": 105,
+    "vol": 0.05,
+    "rate": 0.0,
+    "days": 730,
+    "maturity": "2025-06-20"
+   },
+   "vibe": {
+    "price": 6.05254,
+    "delta": -0.743651,
+    "gamma": 0.045537,
+    "vega": 0.455371,
+    "theta": -0.001559
+   },
+   "trustquant": {
+    "npv": 6.052539747756086,
+    "delta": -0.7436507910374114,
+    "gamma": 0.04553709703340591,
+    "vega": 45.53709703340592,
+    "theta": -0.5692137129175739,
+    "t": 2.0
+   },
+   "calculation_id": "68241f8b-d07b-47ad-bffb-3c8ed4fe65eb",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "put",
+    "spot": 100,
+    "strike": 105,
+    "vol": 0.05,
+    "rate": -0.005,
+    "days": 1825,
+    "maturity": "2028-06-19"
+   },
+   "vibe": {
+    "price": 9.429234,
+    "delta": -0.727111,
+    "gamma": 0.029731,
+    "vega": 0.743277,
+    "theta": -0.002143
+   },
+   "trustquant": {
+    "npv": 9.429233598558042,
+    "delta": -0.7271106201907609,
+    "gamma": 0.0297310788937743,
+    "vega": 74.32769723443576,
+    "theta": -0.7823399642603495,
+    "t": 5.0
+   },
+   "calculation_id": "abe80357-8d79-4d13-b93c-3c0038fd3544",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "put",
+    "spot": 100,
+    "strike": 105,
+    "vol": 0.2,
+    "rate": -0.005,
+    "days": 30,
+    "maturity": "2023-07-21"
+   },
+   "vibe": {
+    "price": 5.679925,
+    "delta": -0.796566,
+    "gamma": 0.049327,
+    "vega": 0.081085,
+    "theta": -0.028197
+   },
+   "trustquant": {
+    "npv": 5.679924965584647,
+    "delta": -0.7965657316405057,
+    "gamma": 0.04932683501884928,
+    "vega": 8.10852082501632,
+    "theta": -10.292049494418034,
+    "t": 0.0821917808219178
+   },
+   "calculation_id": "8a3db02a-6b6c-4abd-afdc-9562f10e5d26",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "put",
+    "spot": 100,
+    "strike": 105,
+    "vol": 0.5,
+    "rate": 0.05,
+    "days": 365,
+    "maturity": "2024-06-20"
+   },
+   "vibe": {
+    "price": 19.668932,
+    "delta": -0.400358,
+    "gamma": 0.007729,
+    "vega": 0.386433,
+    "theta": -0.018289
+   },
+   "trustquant": {
+    "npv": 19.66893186131054,
+    "delta": -0.40035834827167704,
+    "gamma": 0.007728663076303503,
+    "vega": 38.64331538151751,
+    "theta": -6.675590510955465,
+    "t": 1.0
+   },
+   "calculation_id": "e2f55111-4783-4180-92da-8f752183f033",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "put",
+    "spot": 100,
+    "strike": 105,
+    "vol": 0.9,
+    "rate": 0.0,
+    "days": 366,
+    "maturity": "2024-06-21"
+   },
+   "vibe": {
+    "price": 38.191469,
+    "delta": -0.345876,
+    "gamma": 0.004092,
+    "vega": 0.369292,
+    "theta": -0.045405
+   },
+   "trustquant": {
+    "npv": 38.19146903202928,
+    "delta": -0.3458759100114783,
+    "gamma": 0.004092030710338655,
+    "vega": 36.92917578042611,
+    "theta": -16.57272437687155,
+    "t": 1.0027397260273974
+   },
+   "calculation_id": "aa81780b-ee2a-477f-be61-68ccb5e65db0",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "put",
+    "spot": 100,
+    "strike": 105,
+    "vol": 0.9,
+    "rate": -0.005,
+    "days": 730,
+    "maturity": "2025-06-20"
+   },
+   "vibe": {
+    "price": 52.060942,
+    "delta": -0.277526,
+    "gamma": 0.002633,
+    "vega": 0.474005,
+    "theta": -0.030313
+   },
+   "trustquant": {
+    "npv": 52.06094226531625,
+    "delta": -0.2775262120895007,
+    "gamma": 0.0026333632015865813,
+    "vega": 47.400537628558475,
+    "theta": -11.064188783796988,
+    "t": 2.0
+   },
+   "calculation_id": "46eae3a2-dc5f-4d4e-9735-cc54dae2b68c",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "put",
+    "spot": 100,
+    "strike": 95,
+    "vol": 0.05,
+    "rate": 0.05,
+    "days": 1825,
+    "maturity": "2028-06-19"
+   },
+   "vibe": {
+    "price": 0.010354,
+    "delta": -0.002973,
+    "gamma": 0.000812,
+    "vega": 0.020292,
+    "theta": 1.4e-05
+   },
+   "trustquant": {
+    "npv": 0.010354178834799943,
+    "delta": -0.002972942386869737,
+    "gamma": 0.0008116750206670492,
+    "vega": 2.0291875516676234,
+    "theta": 0.005236483117750566,
+    "t": 5.0
+   },
+   "calculation_id": "e86fd4d2-c651-43f0-bbee-add683440776",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "put",
+    "spot": 100,
+    "strike": 95,
+    "vol": 0.2,
+    "rate": 0.05,
+    "days": 30,
+    "maturity": "2023-07-21"
+   },
+   "vibe": {
+    "price": 0.49518,
+    "delta": -0.159889,
+    "gamma": 0.042415,
+    "vega": 0.069724,
+    "theta": -0.020983
+   },
+   "trustquant": {
+    "npv": 0.49518008018994664,
+    "delta": -0.15988852356362293,
+    "gamma": 0.042415140458870126,
+    "vega": 6.972351856252624,
+    "theta": -7.6588264699464155,
+    "t": 0.0821917808219178
+   },
+   "calculation_id": "1b2cce7e-db79-4cbf-a4ec-8801d0d92f84",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "put",
+    "spot": 100,
+    "strike": 95,
+    "vol": 0.5,
+    "rate": 0.0,
+    "days": 365,
+    "maturity": "2024-06-20"
+   },
+   "vibe": {
+    "price": 16.846809,
+    "delta": -0.362199,
+    "gamma": 0.007498,
+    "vega": 0.3749,
+    "theta": -0.025678
+   },
+   "trustquant": {
+    "npv": 16.846808609811802,
+    "delta": -0.362199196645705,
+    "gamma": 0.00749799078304093,
+    "vega": 37.48995391520465,
+    "theta": -9.372488478801163,
+    "t": 1.0
+   },
+   "calculation_id": "656ef3e5-b6dc-4137-a24c-6242b181dc89",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "put",
+    "spot": 100,
+    "strike": 95,
+    "vol": 0.5,
+    "rate": -0.005,
+    "days": 366,
+    "maturity": "2024-06-21"
+   },
+   "vibe": {
+    "price": 17.140231,
+    "delta": -0.365884,
+    "gamma": 0.007513,
+    "vega": 0.376696,
+    "theta": -0.026467
+   },
+   "trustquant": {
+    "npv": 17.14023148102293,
+    "delta": -0.36588390900076817,
+    "gamma": 0.007513327458231053,
+    "vega": 37.669559585103634,
+    "theta": -9.660302434694316,
+    "t": 1.0027397260273974
+   },
+   "calculation_id": "8c041284-d23a-43f8-b8ae-a74bf3403668",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "put",
+    "spot": 100,
+    "strike": 95,
+    "vol": 0.9,
+    "rate": 0.05,
+    "days": 730,
+    "maturity": "2025-06-20"
+   },
+   "vibe": {
+    "price": 37.461394,
+    "delta": -0.225045,
+    "gamma": 0.002357,
+    "vega": 0.424189,
+    "theta": -0.017934
+   },
+   "trustquant": {
+    "npv": 37.46139356173923,
+    "delta": -0.22504549485403702,
+    "gamma": 0.00235660524465167,
+    "vega": 42.418894403730064,
+    "theta": -6.545954088482118,
+    "t": 2.0
+   },
+   "calculation_id": "1b5b6ad7-b579-47d4-9489-03f094aefe40",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "put",
+    "spot": 80,
+    "strike": 100,
+    "vol": 0.05,
+    "rate": 0.0,
+    "days": 1825,
+    "maturity": "2028-06-19"
+   },
+   "vibe": {
+    "price": 20.085749,
+    "delta": -0.973807,
+    "gamma": 0.006794,
+    "vega": 0.10871,
+    "theta": -0.000149
+   },
+   "trustquant": {
+    "npv": 20.08574895254766,
+    "delta": -0.9738074143381432,
+    "gamma": 0.006794346874041774,
+    "vega": 10.870954998466837,
+    "theta": -0.05435477499233419,
+    "t": 5.0
+   },
+   "calculation_id": "31d053ad-d451-4c9c-bbfe-e7f4ace908b9",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "put",
+    "spot": 80,
+    "strike": 100,
+    "vol": 0.2,
+    "rate": 0.0,
+    "days": 30,
+    "maturity": "2023-07-21"
+   },
+   "vibe": {
+    "price": 20.000059,
+    "delta": -0.999944,
+    "gamma": 5e-05,
+    "vega": 5.3e-05,
+    "theta": -1.8e-05
+   },
+   "trustquant": {
+    "npv": 20.00005888125149,
+    "delta": -0.9999440072144686,
+    "gamma": 4.998894704568687e-05,
+    "vega": 0.005259111141244865,
+    "theta": -0.00639858522184792,
+    "t": 0.0821917808219178
+   },
+   "calculation_id": "91e9dad7-c5fe-4d6e-8c1e-a93e575cf323",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "put",
+    "spot": 80,
+    "strike": 100,
+    "vol": 0.2,
+    "rate": -0.005,
+    "days": 365,
+    "maturity": "2024-06-20"
+   },
+   "vibe": {
+    "price": 21.632201,
+    "delta": -0.850997,
+    "gamma": 0.014508,
+    "vega": 0.185699,
+    "theta": -0.006317
+   },
+   "trustquant": {
+    "npv": 21.632200929783906,
+    "delta": -0.8509967201415654,
+    "gamma": 0.014507725477809265,
+    "vega": 18.56988861159586,
+    "theta": -2.305548553865132,
+    "t": 1.0
+   },
+   "calculation_id": "75e14e03-9a4d-4a4c-9436-f62ec4aece89",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "put",
+    "spot": 80,
+    "strike": 100,
+    "vol": 0.5,
+    "rate": 0.05,
+    "days": 366,
+    "maturity": "2024-06-21"
+   },
+   "vibe": {
+    "price": 25.861367,
+    "delta": -0.537921,
+    "gamma": 0.009915,
+    "vega": 0.318146,
+    "theta": -0.012294
+   },
+   "trustquant": {
+    "npv": 25.861367121020912,
+    "delta": -0.5379211729381841,
+    "gamma": 0.009914893133098573,
+    "vega": 31.814583116397394,
+    "theta": -4.487161458675077,
+    "t": 1.0027397260273974
+   },
+   "calculation_id": "faae31bb-0730-4190-b40c-81a61f44d9f9",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "put",
+    "spot": 80,
+    "strike": 100,
+    "vol": 0.9,
+    "rate": 0.0,
+    "days": 730,
+    "maturity": "2025-06-20"
+   },
+   "vibe": {
+    "price": 53.362512,
+    "delta": -0.322371,
+    "gamma": 0.003523,
+    "vega": 0.405836,
+    "theta": -0.025017
+   },
+   "trustquant": {
+    "npv": 53.36251215765141,
+    "delta": -0.3223713326835439,
+    "gamma": 0.003522886170786477,
+    "vega": 40.58364868746022,
+    "theta": -9.131320954678548,
+    "t": 2.0
+   },
+   "calculation_id": "c41d68be-6542-4ece-b415-1cadac7f01dc",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "put",
+    "spot": 80,
+    "strike": 100,
+    "vol": 0.9,
+    "rate": -0.005,
+    "days": 1825,
+    "maturity": "2028-06-19"
+   },
+   "vibe": {
+    "price": 74.179439,
+    "delta": -0.188638,
+    "gamma": 0.001678,
+    "vega": 0.483288,
+    "theta": -0.01314
+   },
+   "trustquant": {
+    "npv": 74.17943915568696,
+    "delta": -0.18863783889807362,
+    "gamma": 0.0016780821550283912,
+    "vega": 48.32876606481768,
+    "theta": -4.795941277171255,
+    "t": 5.0
+   },
+   "calculation_id": "5d2f3785-e801-4c30-b9d7-eb6968c0d3bc",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "put",
+    "spot": 120,
+    "strike": 100,
+    "vol": 0.05,
+    "rate": -0.005,
+    "days": 30,
+    "maturity": "2023-07-21"
+   },
+   "vibe": {
+    "price": 0.0,
+    "delta": 0.0,
+    "gamma": 0.0,
+    "vega": 0.0,
+    "theta": -0.0
+   },
+   "trustquant": {
+    "npv": 0.0,
+    "delta": -0.0,
+    "gamma": 2.266344076385346e-36,
+    "vega": 1.3411789602718762e-34,
+    "theta": -4.079419337493624e-35,
+    "t": 0.0821917808219178
+   },
+   "calculation_id": "4494f0d9-7031-472c-b1b0-534adf3d5f0b",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "put",
+    "spot": 120,
+    "strike": 100,
+    "vol": 0.2,
+    "rate": 0.05,
+    "days": 365,
+    "maturity": "2024-06-20"
+   },
+   "vibe": {
+    "price": 1.291986,
+    "delta": -0.103545,
+    "gamma": 0.0075,
+    "vega": 0.216007,
+    "theta": -0.004039
+   },
+   "trustquant": {
+    "npv": 1.291986396918709,
+    "delta": -0.10354497692291953,
+    "gamma": 0.007500245963538315,
+    "vega": 21.600708374990347,
+    "theta": -1.4742016561155822,
+    "t": 1.0
+   },
+   "calculation_id": "a2a4255d-3542-4b90-a586-4efb6c552e30",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "put",
+    "spot": 120,
+    "strike": 100,
+    "vol": 0.5,
+    "rate": 0.0,
+    "days": 366,
+    "maturity": "2024-06-21"
+   },
+   "vibe": {
+    "price": 13.136103,
+    "delta": -0.269447,
+    "gamma": 0.005498,
+    "vega": 0.39691,
+    "theta": -0.027111
+   },
+   "trustquant": {
+    "npv": 13.136102712279502,
+    "delta": -0.26944682738885684,
+    "gamma": 0.00549757532093379,
+    "vega": 39.69098763212253,
+    "theta": -9.895635577680823,
+    "t": 1.0027397260273974
+   },
+   "calculation_id": "00c99650-51ae-4698-814f-558cd11458f7",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "put",
+    "spot": 120,
+    "strike": 100,
+    "vol": 0.5,
+    "rate": -0.005,
+    "days": 730,
+    "maturity": "2025-06-20"
+   },
+   "vibe": {
+    "price": 21.899889,
+    "delta": -0.275169,
+    "gamma": 0.003934,
+    "vega": 0.566432,
+    "theta": -0.020151
+   },
+   "trustquant": {
+    "npv": 21.89988948637002,
+    "delta": -0.2751692816398006,
+    "gamma": 0.003933553028482056,
+    "vega": 56.64316361014161,
+    "theta": -7.354996467683431,
+    "t": 2.0
+   },
+   "calculation_id": "650da610-6de2-4be7-ab5f-0f51aa4a29b9",
+   "mismatches": []
+  },
+  {
+   "case": {
+    "option_type": "put",
+    "spot": 120,
+    "strike": 100,
+    "vol": 0.9,
+    "rate": 0.05,
+    "days": 1825,
+    "maturity": "2028-06-19"
+   },
+   "vibe": {
+    "price": 47.862299,
+    "delta": -0.111033,
+    "gamma": 0.000784,
+    "vega": 0.507944,
+    "theta": -0.004143
+   },
+   "trustquant": {
+    "npv": 47.86229897802998,
+    "delta": -0.11103299588689053,
+    "gamma": 0.0007838649523558478,
+    "vega": 50.79444891265896,
+    "theta": -1.5121874779164637,
+    "t": 5.0
+   },
+   "calculation_id": "37c1f406-91c0-4909-aae5-f9ff446d6199",
+   "mismatches": []
+  }
+ ]
+}

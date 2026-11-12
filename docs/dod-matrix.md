@@ -20,6 +20,8 @@
 | Schema 政策 | — | — | — | ✅ 同 major 任意 minor 接受 / 异 major 显式拒绝 / 未知枚举=协商不崩溃（测试固定） | — | — | ✅ schema 0.2 | **M2 交付** |
 | 第二 oracle（利率域，自研） | ✅ rates_oracle（纯标准库）：二分法 bootstrap + 现金流加总定价，DF 1e-11、望远镜 gap ~1e-16，**CI 自动** | ✅ 方法独立性（数值解 vs 闭式、加总 vs 恒等式） | — | — | — | — | ✅ fixtures/rates_oracle/ + provider-status | **M2 交付（已替换 GPL FinancePy 手动对照）** |
 
+| 外部实现差分（Vibe Options Lab） | ✅ 55 案例网格（call/put×价内外×vol 0.05-0.9×利率含负×期限 30d-1825d 含闰年日差）NPV/Greeks/T 全一致；口径对照表先行（Vega ÷100、Theta ÷365，crosscheck/vibe_options/CONVENTIONS.md） | ✅ 双向交叉背书：QuantLib 1.33 钉死的 TrustQuant 为 Vibe 期权实现核验，反向成立 | — | — | — | ✅ 每案例带 calculation_id 可重放 | ✅ | **手动差分（vibe-trading-ai 0.1.19, MIT；DSH 内活体实测另证）** |
+
 ## M0 证据索引（对应 ADR-0006 十条门禁）
 
 | 门禁 | 证据 |
